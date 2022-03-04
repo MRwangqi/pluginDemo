@@ -1,6 +1,8 @@
 package com.codelang.plugin.html
 
 object Html {
+    var content: String = ""
+
     fun getHtml(): String {
         return """
             <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
@@ -177,56 +179,8 @@ object Html {
                 </header>
                 <main class="mdl-layout__content">
                     <div class="mdl-layout__tab-panel is-active">
-                         <section class="section--center mdl-grid mdl-grid--no-spacing mdl-shadow--2dp"
-                     id="OverviewCard" style="display: block;">
-                <div class="mdl-card mdl-cell mdl-cell--12-col">
-                    <div class="mdl-card__title">
-                        <h2 class="mdl-card__title-text">so 大小检查</h2>
-                    </div>
-                    <div class="mdl-card__supporting-text">
-                        <span class="location"><a href="../../build.gradle">../../build.gradle</a>:40</span>:
-                        <table class="overview">
-                            <tr>
-                                <td class="countColumn">1</td>
-                                <td class="issueColumn">
-                                    <i class="material-icons warning-icon">warning</i>
-                                    <a href="#GradleDependency">GradleDependency</a>:Dependency
-                                    dasdasdasdasd asdasda
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
-                </div>
-            </section>
-            <section class="section--center mdl-grid mdl-grid--no-spacing mdl-shadow--2dp"
-                     id="GradleDependencyCard" style="display: block;">
-                <div class="mdl-card mdl-cell mdl-cell--12-col">
-                    <div class="mdl-card__title">
-                        <h2 class="mdl-card__title-text">Obsolete Gradle Dependency</h2>
-                    </div>
-                    <div class="mdl-card__supporting-text">
-                        <div class="issue">
-                            <div class="warningslist">
-                                <span class="location"><a href="../../build.gradle">com.tuya.smart.aar</a></span>
-<pre class="errorlines">
-<span class="lineno"> 1 </span>    so 文件 <span class="string"> lib/x86/libAMapSDK_MAP_v9_1_0.so </span>文件大小<span class="string"> 10.4MB </span>
-<span class="lineno"> 2 </span>    so 文件 <span class="string"> lib/x86/libAMapSDK_MAP_v9_1_0.so </span>文件大小<span class="string"> 10.4MB </span>
-</pre>
-
-                                <span class="location"><a href="../../build.gradle">com.tuya.smart.aar</a></span>
-                                <pre class="errorlines">
-<span class="lineno"> 1 </span>    androidTestImplementation <span class="string">'androidx.test.espresso:espresso-core:3.4.0'</span>
-<span class="lineno"> 2 </span>    implementation <span class="string">'androidx.appcompat:appcompat:1.2.0'</span>
-<span class="lineno"> 3 </span>    implementation <span class="string">'com.google.android.material:material:1.1.0'</span>
-<span class="lineno"> 4 </span>    so <span class="string"> lib/x86/libAMapSDK_MAP_v9_1_0.so fileSize=10.4MB</span>
-<span class="lineno"> 5 </span>    so <span class="string"> lib/x86/libAMapSDK_MAP_v9_1_0.so fileSize=10.4MB</span>
-<span class="lineno"> 6 </span>    implementation <span class="string">'androidx.constraintlayout:constraintlayout:2.0.4'</span>
-</pre>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
+            
+            ${Html.content}
                     </div>
                 </main>
             </div>
@@ -235,6 +189,30 @@ object Html {
         """.trimIndent()
     }
 
+
+//    val a = """
+//                        <section class="section--center mdl-grid mdl-grid--no-spacing mdl-shadow--2dp"
+//                     id="OverviewCard" style="display: block;">
+//                <div class="mdl-card mdl-cell mdl-cell--12-col">
+//                    <div class="mdl-card__title">
+//                        <h2 class="mdl-card__title-text">so 大小检查</h2>
+//                    </div>
+//                    <div class="mdl-card__supporting-text">
+//                        <span class="location"><a href="../../build.gradle">../../build.gradle</a>:40</span>:
+//                        <table class="overview">
+//                            <tr>
+//                                <td class="countColumn">1</td>
+//                                <td class="issueColumn">
+//                                    <i class="material-icons warning-icon">warning</i>
+//                                    <a href="#GradleDependency">GradleDependency</a>:Dependency
+//                                    dasdasdasdasd asdasda
+//                                </td>
+//                            </tr>
+//                        </table>
+//                    </div>
+//                </div>
+//            </section>
+//    """.trimIndent()
 
 //    fun getDivBlock(title: String, desc: String, content: String): String {
 ////        val title = "so 大小检查"

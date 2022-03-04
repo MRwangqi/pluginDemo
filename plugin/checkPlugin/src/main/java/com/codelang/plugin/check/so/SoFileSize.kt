@@ -3,6 +3,7 @@ package com.codelang.plugin.check.so
 import com.codelang.plugin.check.so.base.ISoFile
 import com.codelang.plugin.check.so.bean.SoFile
 import com.codelang.plugin.ext.toFileSize
+import com.codelang.plugin.html.Html
 import java.util.zip.ZipInputStream
 
 /**
@@ -12,6 +13,7 @@ import java.util.zip.ZipInputStream
 class SoFileSize : ISoFile {
 
     private val hashMap = HashMap<String, ArrayList<SoFile>>()
+
 
     override fun onIteratorFile(path: String, dependency: String, fileName: String, fileSize: Long, zipInputStream: ZipInputStream) {
         var list = hashMap[dependency]
@@ -30,8 +32,8 @@ class SoFileSize : ISoFile {
     }
 
     override fun onEnd() {
-        var template = ""
         println()
+        var result = ""
         println("==================== so 大小检查 ============================")
         val soList = hashMap.flatMap { it.value }.toList()
         val soSize = soList.sumOf { it.fileSize }
@@ -41,31 +43,53 @@ class SoFileSize : ISoFile {
             Pair(entry.key, entry.value.sumOf { it.fileSize })
         }.sortedByDescending { it.second }.forEach {
             println("so = ${it.first}")
-
-            var soContent = ""
-            hashMap[it.first]?.forEachIndexed { index, soFile ->
-                val text = "fileName=" + soFile.fileName + " fileSize=" + soFile.fileSize.toFileSize()
-                soContent += """
-                    <span class="lineno"> $index </span>    so <span class="string">$text</span>
-                """.trimIndent() + "\n"
-
-                println(text)
+            hashMap[it.first]?.forEach {
+                println("---> fileName=" + it.fileName + " fileSize=" + it.fileSize.toFileSize())
             }
-            soContent = ""
 
-            template += """
-                 <span class="location"><a href="${hashMap[it.first]?.get(0)?.filePath}">${it.first}</a></span>
-                 <pre class="errorlines">
-                  $soContent
-                 </pre>
-           """.trimIndent() + "\n"
+            result += generatorPre(hashMap[it.first]?.firstOrNull()?.filePath
+                    ?: "", it.first, hashMap[it.first] ?: arrayListOf())
         }
-
-         """
-             <div class="warningslist">
-             $template
-             </div>
-        """.trimIndent()
+        //todo
+        Html.content = generatorHtml(result)
     }
 
+    private fun generatorPre(path: String, fileName: String, soFile: ArrayList<SoFile>): String {
+        var s = """
+             <span class="location"><a href="$path">$fileName</a></span>
+             <pre class="errorlines">
+        """.trimIndent()
+
+        soFile.forEachIndexed { index: Int, soFile ->
+            s += """
+            <span class="lineno"> $index </span>    so 文件 <span class="string"> ${soFile.fileName} </span>文件大小<span class="string"> ${soFile.fileSize.toFileSize()} </span>
+        """.trimIndent()
+            s += "\n"
+        }
+        s += """
+             </pre>
+        """.trimIndent()
+        return s
+    }
+
+
+    private fun generatorHtml(pres: String): String {
+        return """
+            <section class="section--center mdl-grid mdl-grid--no-spacing mdl-shadow--2dp"
+                     id="GradleDependencyCard" style="display: block;">
+                <div class="mdl-card mdl-cell mdl-cell--12-col">
+                    <div class="mdl-card__title">
+                        <h2 class="mdl-card__title-text">so 大小检查</h2>
+                    </div>
+                    <div class="mdl-card__supporting-text">
+                        <div class="issue">
+                            <div class="warningslist">
+$pres
+                         </div>
+                    </div>
+                  </div>
+                </div>
+            </section>            
+        """.trimIndent()
+    }
 }

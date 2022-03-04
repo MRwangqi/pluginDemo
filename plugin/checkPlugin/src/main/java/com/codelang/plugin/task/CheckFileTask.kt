@@ -13,11 +13,11 @@ import java.util.zip.ZipInputStream
  */
 class CheckFileTask(private val project: Project) {
 
-    fun runTask(taskName:String,configurationName: String, checkFiles: ArrayList<BaseFileCheck>) {
+    fun runTask(taskName: String, configurationName: String, checkFiles: ArrayList<BaseFileCheck>) {
         project.tasks.create(taskName) {
             it.doLast {
                 val list = project.configurations.getByName(configurationName).asPath.split(File.pathSeparator)
-                .toList()
+                        .toList()
 
 
                 val startTime = System.currentTimeMillis()
@@ -35,7 +35,8 @@ class CheckFileTask(private val project: Project) {
                             continue
                         }
                         checkFiles.forEach { fileCheck ->
-                            fileCheck.onIteratorFile(path,path.substring( path.lastIndexOf("/")+1),ze!!.name, ze!!.size, zipInputStream)
+                            val lastIndex = path.lastIndexOf("/") + 1
+                            fileCheck.onIteratorFile(path.substring(0, lastIndex), path.substring(lastIndex), ze!!.name, ze!!.size, zipInputStream)
                         }
                     }
                     zipInputStream.closeEntry()
@@ -49,12 +50,12 @@ class CheckFileTask(private val project: Project) {
                 val endTime = System.currentTimeMillis()
                 println("耗时:" + ((endTime - startTime) / 1000f) + "s")
 
-//                generatorHtml()
+                generatorHtml()
             }
         }
     }
 
-    private fun generatorHtml(){
+    private fun generatorHtml() {
         val buildDir = File(project.buildDir.absolutePath)
         if (!buildDir.exists()) {
             buildDir.mkdir()
