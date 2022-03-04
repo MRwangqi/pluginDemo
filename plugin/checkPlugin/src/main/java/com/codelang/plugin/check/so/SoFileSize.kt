@@ -33,6 +33,9 @@ class SoFileSize : ISoFile {
     override fun onEnd() {
         println()
         println("==================== so 大小检查 ============================")
+        val soList = hashMap.flatMap { it.value }.toList()
+        val soSize = soList.sumOf { it.fileSize }
+        println("-------------------> 总共有 ${soList.size} 个 so 文件，占用大小：${soSize.toFileSize()}")
         // 按依赖 so 的总体大小进行降序排序输出
         hashMap.map { entry ->
             Pair(entry.key, entry.value.sumOf { it.fileSize })
