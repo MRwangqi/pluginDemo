@@ -1,0 +1,16 @@
+dependencyResolutionManagement {
+//    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+        maven { url 'https://jitpack.io' }
+    }
+}
+rootProject.name = "pluginDemo"
+include ':app'
+
+
+includeBuild("./Plugin")
+
+//include ':Plugin'
+//include ':Plugin:checkPlugin'
