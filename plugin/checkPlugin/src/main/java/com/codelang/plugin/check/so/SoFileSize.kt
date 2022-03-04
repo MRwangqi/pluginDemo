@@ -33,9 +33,12 @@ class SoFileSize : ISoFile {
     override fun onEnd() {
         println()
         println("==================== so 大小检查 ============================")
-        hashMap.forEach { (t, u) ->
-            println(" so = $t")
-            u.forEach {
+        // 按依赖 so 的总体大小进行降序排序输出
+        hashMap.map { entry ->
+            Pair(entry.key, entry.value.sumOf { it.fileSize })
+        }.sortedByDescending { it.second }.forEach {
+            println("so = ${it.first}")
+            hashMap[it.first]?.forEach {
                 println("---> fileName=" + it.fileName + " fileSize=" + it.fileSize.toFileSize())
             }
         }
