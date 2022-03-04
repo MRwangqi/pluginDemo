@@ -18,7 +18,7 @@ class Support64bit : ISoFile {
             hashMap[dependency] = list
         }
 
-        list.add(SoFile(fileName, fileSize))
+        list.add(SoFile(path,fileName, fileSize))
     }
 
     override fun onEnd() {

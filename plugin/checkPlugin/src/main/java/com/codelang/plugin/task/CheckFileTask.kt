@@ -1,6 +1,7 @@
 package com.codelang.plugin.task
 
 import com.codelang.plugin.check.base.BaseFileCheck
+import com.codelang.plugin.html.Html
 import org.gradle.api.Project
 import java.io.*
 import java.util.zip.ZipEntry
@@ -47,8 +48,33 @@ class CheckFileTask(private val project: Project) {
 
                 val endTime = System.currentTimeMillis()
                 println("耗时:" + ((endTime - startTime) / 1000f) + "s")
+
+//                generatorHtml()
             }
         }
+    }
+
+    private fun generatorHtml(){
+        val buildDir = File(project.buildDir.absolutePath)
+        if (!buildDir.exists()) {
+            buildDir.mkdir()
+        }
+
+        // 写文件
+        val tempDir = File(project.buildDir.absolutePath + File.separator + "checkPlugin")
+        if (!tempDir.exists()) {
+            tempDir.mkdir()
+        }
+
+        val htmlFile = File(tempDir, "check.html")
+        if (htmlFile.exists()) {
+            htmlFile.delete()
+        }
+
+        htmlFile.createNewFile()
+        htmlFile.writeText(Html.getHtml())
+
+        println("report file:" + htmlFile.absolutePath)
     }
 
 }
