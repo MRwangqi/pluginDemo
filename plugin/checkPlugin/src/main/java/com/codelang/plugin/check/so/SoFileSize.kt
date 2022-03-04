@@ -51,7 +51,7 @@ class SoFileSize : ISoFile {
                     ?: "", it.first, hashMap[it.first] ?: arrayListOf())
         }
         //todo
-        Html.content = generatorHtml(result)
+        Html.content = generatorHtml(result,soList.size.toString(),soSize.toFileSize())
     }
 
     private fun generatorPre(path: String, fileName: String, soFile: ArrayList<SoFile>): String {
@@ -73,13 +73,13 @@ class SoFileSize : ISoFile {
     }
 
 
-    private fun generatorHtml(pres: String): String {
+    private fun generatorHtml(pres: String,soFiles:String,fileSize:String): String {
         return """
             <section class="section--center mdl-grid mdl-grid--no-spacing mdl-shadow--2dp"
                      id="GradleDependencyCard" style="display: block;">
                 <div class="mdl-card mdl-cell mdl-cell--12-col">
                     <div class="mdl-card__title">
-                        <h2 class="mdl-card__title-text">so 大小检查</h2>
+                        <h2 class="mdl-card__title-text">so 大小检查(总共有 $soFiles 个 so 文件，占用 ${fileSize})</h2>
                     </div>
                     <div class="mdl-card__supporting-text">
                         <div class="issue">
