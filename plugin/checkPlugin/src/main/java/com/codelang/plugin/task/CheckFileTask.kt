@@ -1,9 +1,11 @@
 package com.codelang.plugin.task
 
 import com.codelang.plugin.check.base.BaseFileCheck
-import com.codelang.plugin.html.Html
+import com.codelang.plugin.html.IndexHtml
 import org.gradle.api.Project
-import java.io.*
+import java.io.BufferedInputStream
+import java.io.File
+import java.io.FileInputStream
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 
@@ -73,7 +75,7 @@ class CheckFileTask(private val project: Project) {
         }
 
         htmlFile.createNewFile()
-        htmlFile.writeText(Html.getHtml())
+        htmlFile.writeText(IndexHtml.getHtml())
 
         println("report file:" + htmlFile.absolutePath)
     }

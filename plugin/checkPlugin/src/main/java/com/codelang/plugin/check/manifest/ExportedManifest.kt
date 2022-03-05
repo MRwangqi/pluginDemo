@@ -2,9 +2,7 @@ package com.codelang.plugin.check.manifest
 
 import com.codelang.plugin.check.manifest.base.IManifest
 import com.codelang.plugin.check.manifest.bean.ExportedFile
-import com.codelang.plugin.check.so.bean.SoFile
-import com.codelang.plugin.ext.toFileSize
-import com.codelang.plugin.html.Html
+import com.codelang.plugin.html.IndexHtml
 import groovy.util.Node
 import java.util.zip.ZipInputStream
 
@@ -61,14 +59,9 @@ class ExportedManifest : IManifest {
     }
 
     override fun onEnd() {
-//        hashMap.forEach { t, u ->
-//            println("$t 模块需要显示声明 exported:")
-//            u.forEach {
-//                println("---> node="+ it.nodeName +" className="+it.className)
-//            }
-//        }
-
-        generatorHtmlDom(hashMap)
+        if (hashMap.isNotEmpty()) {
+            generatorHtmlDom(hashMap)
+        }
     }
 
     private fun generatorHtmlDom(map: HashMap<String, ArrayList<ExportedFile>>) {
@@ -76,8 +69,7 @@ class ExportedManifest : IManifest {
         map.forEach { entry ->
             result += generatorPre(entry.value[0].path, entry.key, entry.value)
         }
-        //todo 添加到 html
-        Html.selector.add(generatorSection(result))
+        IndexHtml.insertSection(generatorSection(result))
     }
 
     private fun generatorPre(path: String, fileName: String, list: ArrayList<ExportedFile>): String {

@@ -1,9 +1,8 @@
 package com.codelang.plugin.check.manifest
 
 import com.codelang.plugin.check.manifest.base.IManifest
-import com.codelang.plugin.check.manifest.bean.ExportedFile
 import com.codelang.plugin.check.manifest.bean.ManifestConfig
-import com.codelang.plugin.html.Html
+import com.codelang.plugin.html.IndexHtml
 import groovy.util.Node
 import java.util.zip.ZipInputStream
 
@@ -12,7 +11,7 @@ import java.util.zip.ZipInputStream
  * @since 2022/2/28.
  */
 class PermissionManifest : IManifest {
-    private val hashMap = HashMap<String, Pair<String,ArrayList<String>>>()
+    private val hashMap = HashMap<String, Pair<String, ArrayList<String>>>()
 
     override fun onNode(parentNode: Node, path: String, dependency: String, fileName: String, fileSize: Long, zipInputStream: ZipInputStream) {
         parentNode.children()?.forEach {
@@ -25,7 +24,7 @@ class PermissionManifest : IManifest {
                 if (!ManifestConfig.permissions.contains(permission)) {
                     var pair = hashMap[dependency]
                     if (pair == null) {
-                        pair = Pair(path,ArrayList())
+                        pair = Pair(path, ArrayList())
                         hashMap[dependency] = pair
                     }
                     pair.second.add(permission)
@@ -35,27 +34,19 @@ class PermissionManifest : IManifest {
     }
 
     override fun onEnd() {
-//        println()
-//        println("==================== 未匹配的权限 ============================")
-//        hashMap.forEach { (t, u) ->
-//            if (u.isNotEmpty()) {
-//                println("$t :")
-//                u.forEach {
-//                    println("---> $it")
-//                }
-//            }
-//        }
-        generatorHtmlDom(hashMap)
+        if (hashMap.isNotEmpty()) {
+            generatorHtmlDom(hashMap)
+        }
     }
 
 
-    private fun generatorHtmlDom(map: HashMap<String, Pair<String,ArrayList<String>>>) {
+    private fun generatorHtmlDom(map: HashMap<String, Pair<String, ArrayList<String>>>) {
         var result = ""
         map.forEach { entry ->
             result += generatorPre(entry.value.first, entry.key, entry.value.second)
         }
         //todo 添加到 html
-        Html.selector.add(generatorSection(result))
+        IndexHtml.insertSection(generatorSection(result))
     }
 
     private fun generatorPre(path: String, fileName: String, list: ArrayList<String>): String {

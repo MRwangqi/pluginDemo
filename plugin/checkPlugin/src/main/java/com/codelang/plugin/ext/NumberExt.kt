@@ -1,6 +1,8 @@
 package com.codelang.plugin.ext
 
 import java.text.DecimalFormat
+import java.text.SimpleDateFormat
+import java.util.*
 
 /**
  * @author wangqi
@@ -35,3 +37,10 @@ fun Long.toFileSize(): String {
     }
     return sb.toString()
 }
+
+
+fun Long.toTime():String{
+    val sdf2: SimpleDateFormat = SimpleDateFormat("yyyy 年 MM 月 dd 日 HH 时 mm 分 ss 秒")
+    return sdf2.format(Date(this))
+}
+

@@ -3,7 +3,7 @@ package com.codelang.plugin.check.so
 import com.codelang.plugin.check.so.base.ISoFile
 import com.codelang.plugin.check.so.bean.SoFile
 import com.codelang.plugin.ext.toFileSize
-import com.codelang.plugin.html.Html
+import com.codelang.plugin.html.IndexHtml
 import java.util.zip.ZipInputStream
 
 /**
@@ -38,8 +38,10 @@ class SoFileSize : ISoFile {
         }.sortedByDescending { it.second }.toList()
 
 
-        // 产出 html dom 节点
-        generatorHtmlDom(list)
+        if (list.isNotEmpty()){
+            // 产出 html dom 节点
+            generatorHtmlDom(list)
+        }
     }
 
     private fun generatorHtmlDom(list: List<Pair<String, Long>>) {
@@ -50,7 +52,7 @@ class SoFileSize : ISoFile {
                 ?: "", it.first, hashMap[it.first] ?: arrayListOf()) }
 
         //todo 添加到 html
-        Html.selector.add(generatorSection(result, soList.size.toString(), soSize.toFileSize()))
+        IndexHtml.insertSection(generatorSection(result, soList.size.toString(), soSize.toFileSize()))
     }
 
     private fun generatorPre(path: String, fileName: String, soFile: ArrayList<SoFile>): String {

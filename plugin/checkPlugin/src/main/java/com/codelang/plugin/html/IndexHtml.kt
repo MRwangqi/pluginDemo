@@ -1,14 +1,21 @@
 package com.codelang.plugin.html
 
-object Html {
-    var selector = arrayListOf<String>()
+import com.codelang.plugin.ext.toTime
+
+/**
+ * @author wangqi
+ * @since 2022/3/5.
+ */
+object IndexHtml {
+
+    private var sectionList = arrayListOf<String>()
+
+    fun insertSection(section: String) {
+        sectionList.add(section)
+    }
 
     fun getHtml(): String {
-        var result = ""
-        selector.forEach {
-            result += it
-        }
-
+        val result = sectionList.joinToString { it }
         return """
             <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
                     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -16,7 +23,7 @@ object Html {
 
             <head>
                 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-                <title>Lint Report</title>
+                <title>Check Report</title>
                 <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
                 <link rel="stylesheet" href="https://code.getmdl.io/1.2.1/material.blue-indigo.min.css"/>
                 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:300,400,500,700"
@@ -175,10 +182,10 @@ object Html {
             <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
                 <header class="mdl-layout__header">
                     <div class="mdl-layout__header-row">
-                        <span class="mdl-layout-title">Gradle checkDependency result</span>
+                        <span class="mdl-layout-title">依赖检查结果</span>
                         <div class="mdl-layout-spacer"></div>
                         <nav class="mdl-navigation mdl-layout--large-screen-only">
-                            Check performed at Fri Mar 04 14:13:14 CST 2022
+                            报告生成时间: ${System.currentTimeMillis().toTime()}
                         </nav>
                     </div>
                 </header>
@@ -193,58 +200,4 @@ object Html {
             </html>
         """.trimIndent()
     }
-
-
-
-
-//    fun getDivBlock(title: String, desc: String, content: String): String {
-////        val title = "so 大小检查"
-////        val desc  = "so 文件大小为。"
-//        return """
-//            <section class="section--center mdl-grid mdl-grid--no-spacing mdl-shadow--2dp"
-//                                 id="OverviewCard" style="display: block;">
-//                            <div class="mdl-card mdl-cell mdl-cell--12-col">
-//                                <div class="mdl-card__title">
-//                                    <h2 class="mdl-card__title-text">$title</h2>
-//                                </div>
-//                                <div class="mdl-card__supporting-text">
-//                                    <span class="location">$desc</span>:
-//                                    <table class="overview">
-//                                    <tr>
-//                                        <td class="countColumn">1</td>
-//                                        <td class="issueColumn">
-//                                            <i class="material-icons warning-icon">warning</i>
-//                                            <a href="$path">$pathContent</a>:content
-//                                        </td>
-//                                    </tr>
-//                                    </table>
-//                                </div>
-//                            </div>
-//                        </section>
-//        """.trimIndent()
-//    }
-//
-//    fun getCodeBlock(): String {
-//        return """
-//            <section class="section--center mdl-grid mdl-grid--no-spacing mdl-shadow--2dp"
-//                     id="GradleDependencyCard" style="display: block;">
-//                <div class="mdl-card mdl-cell mdl-cell--12-col">
-//                    <div class="mdl-card__title">
-//                        <h2 class="mdl-card__title-text">Obsolete Gradle Dependency</h2>
-//                    </div>
-//                    <div class="mdl-card__supporting-text">
-//                        <div class="issue">
-//                            <div class="warningslist">
-//                                <span class="location"><a href="文件路径">依赖名称</a></span>
-//<pre class="errorlines">
-//<span class="lineno"> 1 </span>    so <span class="string">so 文件</span>
-//</pre>
-//                            </div>
-//                        </div>
-//                        </div>
-//                    </div>
-//                </div>
-//            </section>
-//        """.trimIndent()
-//    }
 }

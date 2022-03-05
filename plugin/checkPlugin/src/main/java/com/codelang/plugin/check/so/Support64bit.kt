@@ -2,8 +2,7 @@ package com.codelang.plugin.check.so
 
 import com.codelang.plugin.check.so.base.ISoFile
 import com.codelang.plugin.check.so.bean.SoFile
-import com.codelang.plugin.ext.toFileSize
-import com.codelang.plugin.html.Html
+import com.codelang.plugin.html.IndexHtml
 import java.util.zip.ZipInputStream
 
 /**
@@ -24,8 +23,6 @@ class Support64bit : ISoFile {
     }
 
     override fun onEnd() {
-        println()
-        println("==================== so 64 位检查 ============================")
         // 32bit : x86、armeabi、armeabi-v7a
         // 64bit : arm64-v8a 、x86_64
 
@@ -40,7 +37,10 @@ class Support64bit : ISoFile {
         }.toMap()
 
         // 生成 html dom 节点
-        generatorHtmlDom(map)
+        if (map.isNotEmpty()) {
+            generatorHtmlDom(map)
+        }
+
     }
 
 
@@ -50,7 +50,7 @@ class Support64bit : ISoFile {
             result += generatorPre(entry.value[0].filePath, entry.key, entry.value)
         }
         //todo 添加到 html
-        Html.selector.add(generatorSection(result))
+        IndexHtml.insertSection(generatorSection(result))
     }
 
 

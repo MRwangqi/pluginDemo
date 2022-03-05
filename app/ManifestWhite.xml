@@ -3,7 +3,7 @@
     package="com.codelang.includebuildingdemo">
 
     <!--  插件会读取 uses-sdk ，如果分析出的依赖大于 targetSdk 或是如果小于 minSDK 则会输出分析-->
-    <uses-sdk android:minSdkVersion="14" android:targetSdkVersion="28" />
+    <uses-sdk android:minSdkVersion="21" android:targetSdkVersion="28" />
 
     <!--  插件会读取 uses-permission ，如果分析出的依赖中的权限不在下面则会输出分析-->
     <uses-permission android:name="android.permission.INTERNET" />
