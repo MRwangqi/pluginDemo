@@ -1,4 +1,4 @@
-package com.codelang.plugin.check.manifest
+package com.codelang.plugin.check.manifest.bean
 
 object ManifestConfig {
     var usesSdk: UsesSdk = UsesSdk(-1,-1)

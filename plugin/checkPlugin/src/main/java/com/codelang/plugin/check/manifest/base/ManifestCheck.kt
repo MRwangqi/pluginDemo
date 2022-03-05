@@ -6,6 +6,8 @@ package com.codelang.plugin.check.manifest.base
  */
 import com.codelang.plugin.check.base.BaseFileCheck
 import com.codelang.plugin.check.manifest.*
+import com.codelang.plugin.check.manifest.bean.ManifestConfig
+import com.codelang.plugin.check.manifest.bean.UsesSdk
 import com.codelang.plugin.config.Config
 import groovy.util.Node
 import groovy.util.XmlParser

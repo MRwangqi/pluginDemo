@@ -1,7 +1,7 @@
 package com.codelang.plugin.check.manifest
 
 import com.codelang.plugin.check.manifest.base.IManifest
-import com.codelang.plugin.ext.toFileSize
+import com.codelang.plugin.check.manifest.bean.ManifestConfig
 import groovy.util.Node
 import java.util.zip.ZipInputStream
 

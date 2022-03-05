@@ -2,6 +2,9 @@ package com.codelang.plugin.check.manifest
 
 import com.codelang.plugin.check.manifest.base.IManifest
 import com.codelang.plugin.check.manifest.bean.ExportedFile
+import com.codelang.plugin.check.so.bean.SoFile
+import com.codelang.plugin.ext.toFileSize
+import com.codelang.plugin.html.Html
 import groovy.util.Node
 import java.util.zip.ZipInputStream
 
@@ -10,9 +13,9 @@ class ExportedManifest : IManifest {
     private val hashMap = HashMap<String, ArrayList<ExportedFile>>()
 
 
-    override fun onNode(parentNode: Node,path:String,dependency: String, fileName: String, fileSize: Long, zipInputStream: ZipInputStream) {
+    override fun onNode(parentNode: Node, path: String, dependency: String, fileName: String, fileSize: Long, zipInputStream: ZipInputStream) {
         val application = parentNode.children().find {
-            (it as? Node)?.name()?.equals("application")?:false
+            (it as? Node)?.name()?.equals("application") ?: false
         } as Node?
 
         if (application != null) {
@@ -48,7 +51,8 @@ class ExportedManifest : IManifest {
                         deps = ArrayList()
                         hashMap[dependency] = deps
                     }
-                    deps.add(ExportedFile(node.name().toString(), node.attribute("android:name")?.toString()
+
+                    deps.add(ExportedFile(path, node.name().toString(), node.attribute("android:name")?.toString()
                             ?: ""))
 
                 }
@@ -57,13 +61,62 @@ class ExportedManifest : IManifest {
     }
 
     override fun onEnd() {
-        println()
-        println("==================== exported 检查 ============================")
-        hashMap.forEach { t, u ->
-            println("$t 模块需要显示声明 exported:")
-            u.forEach {
-                println("---> node="+ it.nodeName +" className="+it.className)
-            }
-        }
+//        hashMap.forEach { t, u ->
+//            println("$t 模块需要显示声明 exported:")
+//            u.forEach {
+//                println("---> node="+ it.nodeName +" className="+it.className)
+//            }
+//        }
+
+        generatorHtmlDom(hashMap)
     }
+
+    private fun generatorHtmlDom(map: HashMap<String, ArrayList<ExportedFile>>) {
+        var result = ""
+        map.forEach { entry ->
+            result += generatorPre(entry.value[0].path, entry.key, entry.value)
+        }
+        //todo 添加到 html
+        Html.selector.add(generatorSection(result))
+    }
+
+    private fun generatorPre(path: String, fileName: String, list: ArrayList<ExportedFile>): String {
+        var s = """
+             <span class="location"><a href="$path">$fileName</a></span>
+             <pre class="errorlines">
+        """.trimIndent()
+
+        list.forEachIndexed { index: Int, exportedFile ->
+            s += """
+            <span class="lineno"> $index </span><span class="string"> &lt;${exportedFile.nodeName}&gt;${exportedFile.className}&lt;/&gt; </span>
+        """.trimIndent()
+            s += "\n"
+        }
+        s += """
+             </pre>
+        """.trimIndent()
+        return s
+    }
+
+
+    private fun generatorSection(pres: String): String {
+        return """
+            <section class="section--center mdl-grid mdl-grid--no-spacing mdl-shadow--2dp"
+                     id="GradleDependencyCard" style="display: block;">
+                <div class="mdl-card mdl-cell mdl-cell--12-col">
+                    <div class="mdl-card__title">
+                        <h2 class="mdl-card__title-text">exported 检查(以下依赖未显示设置 exported)</h2>
+                    </div>
+                    <div class="mdl-card__supporting-text">
+                        <div class="issue">
+                            <div class="warningslist">
+$pres
+                         </div>
+                    </div>
+                  </div>
+                </div>
+            </section>            
+        """.trimIndent()
+    }
+
 }
