@@ -32,26 +32,25 @@ class SoFileSize : ISoFile {
     }
 
     override fun onEnd() {
-        println()
-        var result = ""
-        println("==================== so 大小检查 ============================")
+        // 按依赖 so 的总体大小进行降序排序
+        val list = hashMap.map { entry ->
+            Pair(entry.key, entry.value.sumOf { it.fileSize })
+        }.sortedByDescending { it.second }.toList()
+
+
+        // 产出 html dom 节点
+        generatorHtmlDom(list)
+    }
+
+    private fun generatorHtmlDom(list: List<Pair<String, Long>>) {
         val soList = hashMap.flatMap { it.value }.toList()
         val soSize = soList.sumOf { it.fileSize }
-        println("-------------------> 总共有 ${soList.size} 个 so 文件，占用大小：${soSize.toFileSize()}")
-        // 按依赖 so 的总体大小进行降序排序输出
-        hashMap.map { entry ->
-            Pair(entry.key, entry.value.sumOf { it.fileSize })
-        }.sortedByDescending { it.second }.forEach {
-            println("so = ${it.first}")
-            hashMap[it.first]?.forEach {
-                println("---> fileName=" + it.fileName + " fileSize=" + it.fileSize.toFileSize())
-            }
 
-            result += generatorPre(hashMap[it.first]?.firstOrNull()?.filePath
-                    ?: "", it.first, hashMap[it.first] ?: arrayListOf())
-        }
-        //todo
-        Html.content = generatorHtml(result,soList.size.toString(),soSize.toFileSize())
+        val result = list.joinToString(separator="") { generatorPre(hashMap[it.first]?.firstOrNull()?.filePath
+                ?: "", it.first, hashMap[it.first] ?: arrayListOf()) }
+
+        //todo 添加到 html
+        Html.selector.add(generatorSection(result, soList.size.toString(), soSize.toFileSize()))
     }
 
     private fun generatorPre(path: String, fileName: String, soFile: ArrayList<SoFile>): String {
@@ -73,7 +72,7 @@ class SoFileSize : ISoFile {
     }
 
 
-    private fun generatorHtml(pres: String,soFiles:String,fileSize:String): String {
+    private fun generatorSection(pres: String, soFiles: String, fileSize: String): String {
         return """
             <section class="section--center mdl-grid mdl-grid--no-spacing mdl-shadow--2dp"
                      id="GradleDependencyCard" style="display: block;">

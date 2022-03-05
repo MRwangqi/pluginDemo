@@ -1,9 +1,14 @@
 package com.codelang.plugin.html
 
 object Html {
-    var content: String = ""
+    var selector = arrayListOf<String>()
 
     fun getHtml(): String {
+        var result = ""
+        selector.forEach {
+            result += it
+        }
+
         return """
             <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
                     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -180,7 +185,7 @@ object Html {
                 <main class="mdl-layout__content">
                     <div class="mdl-layout__tab-panel is-active">
             
-            ${Html.content}
+            $result
                     </div>
                 </main>
             </div>
@@ -190,29 +195,7 @@ object Html {
     }
 
 
-//    val a = """
-//                        <section class="section--center mdl-grid mdl-grid--no-spacing mdl-shadow--2dp"
-//                     id="OverviewCard" style="display: block;">
-//                <div class="mdl-card mdl-cell mdl-cell--12-col">
-//                    <div class="mdl-card__title">
-//                        <h2 class="mdl-card__title-text">so 大小检查</h2>
-//                    </div>
-//                    <div class="mdl-card__supporting-text">
-//                        <span class="location"><a href="../../build.gradle">../../build.gradle</a>:40</span>:
-//                        <table class="overview">
-//                            <tr>
-//                                <td class="countColumn">1</td>
-//                                <td class="issueColumn">
-//                                    <i class="material-icons warning-icon">warning</i>
-//                                    <a href="#GradleDependency">GradleDependency</a>:Dependency
-//                                    dasdasdasdasd asdasda
-//                                </td>
-//                            </tr>
-//                        </table>
-//                    </div>
-//                </div>
-//            </section>
-//    """.trimIndent()
+
 
 //    fun getDivBlock(title: String, desc: String, content: String): String {
 ////        val title = "so 大小检查"
