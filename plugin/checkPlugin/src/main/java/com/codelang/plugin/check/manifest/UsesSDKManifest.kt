@@ -29,14 +29,14 @@ class UsesSDKManifest : IManifest {
             hashMap[dependency] = Pair(path,list)
             if (min != null && ManifestConfig.usesSdk.minSdkVersion != -1) {
                 val minInt = min.toString().toInt()
-                if (minInt < ManifestConfig.usesSdk.minSdkVersion) {
+                if (minInt != ManifestConfig.usesSdk.minSdkVersion) {
                     // 需要记录
                     list.add("android:minSdkVersion=$minInt")
                 }
             }
             if (target != null && ManifestConfig.usesSdk.targetSdkVersion != -1) {
                 val targetInt = target.toString().toInt()
-                if (targetInt > ManifestConfig.usesSdk.targetSdkVersion) {
+                if (targetInt != ManifestConfig.usesSdk.targetSdkVersion) {
                     // 需要记录
                     list.add("android:targetSdkVersion=$targetInt")
                 }

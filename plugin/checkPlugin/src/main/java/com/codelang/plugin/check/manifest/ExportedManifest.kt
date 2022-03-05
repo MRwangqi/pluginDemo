@@ -97,7 +97,7 @@ class ExportedManifest : IManifest {
                      id="GradleDependencyCard" style="display: block;">
                 <div class="mdl-card mdl-cell mdl-cell--12-col">
                     <div class="mdl-card__title">
-                        <h2 class="mdl-card__title-text">exported 检查(以下依赖未显示设置 exported)</h2>
+                        <h2 class="mdl-card__title-text">更安全的组件导出(以下依赖未显示设置 exported)</h2>
                     </div>
                     <div class="mdl-card__supporting-text">
                         <div class="issue">

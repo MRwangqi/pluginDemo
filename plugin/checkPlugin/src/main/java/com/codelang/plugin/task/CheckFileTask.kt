@@ -22,6 +22,8 @@ class CheckFileTask(private val project: Project) {
                         .toList()
 
 
+                IndexHtml.cleanSection()
+
                 val startTime = System.currentTimeMillis()
 
                 checkFiles.forEach {

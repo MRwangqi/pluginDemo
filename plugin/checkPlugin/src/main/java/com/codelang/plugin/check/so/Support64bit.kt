@@ -29,9 +29,29 @@ class Support64bit : ISoFile {
 
         // 不支持 64 bit so 列表
         val map = hashMap.filter { entry ->
+            val list = entry.value.map { it.fileName }.toList()
+
             val isSupport64 = entry.value.filter {
-                it.fileName.contains("arm64-v8a")
-                        || it.fileName.contains("x86_64")
+                it.fileName.contains("arm64-v8a") || it.fileName.contains("x86_64")
+
+                //todo 1、获取 32 位 so 的文件名称，然后去查下这个文件存不存在 64 位的 so 下，如果存在，如果支持，反之不是
+                val soName = it.fileName
+
+                val isSupport = when {
+                    soName.contains("x86") -> {
+                        list.contains(soName.replace("x86", "arm64-v8a")) && list.contains(soName.replace("x86", "x86_64"))
+                    }
+                    soName.contains("armeabi") -> {
+                        list.contains(soName.replace("armeabi", "arm64-v8a")) && list.contains(soName.replace("armeabi", "x86_64"))
+                    }
+                    soName.contains("armeabi-v7a") -> {
+                        list.contains(soName.replace("armeabi-v7a", "arm64-v8a")) && list.contains(soName.replace("armeabi-v7a", "x86_64"))
+                    }
+                    else -> {
+                        false
+                    }
+                }
+                isSupport
             }.toList().isNotEmpty()
             !isSupport64
         }.toMap()

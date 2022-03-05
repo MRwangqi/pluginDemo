@@ -14,6 +14,10 @@ object IndexHtml {
         sectionList.add(section)
     }
 
+    fun cleanSection(){
+        sectionList.clear()
+    }
+
     fun getHtml(): String {
         val result = sectionList.joinToString { it }
         return """
