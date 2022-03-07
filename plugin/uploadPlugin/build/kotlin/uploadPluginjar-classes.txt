@@ -1,0 +1,1 @@
+/Users/codelang/tuya/demo/pluginDemo/plugin/uploadPlugin/build/classes/groovy/main/com/codelang/upload/UploadPlugin.class:/Users/codelang/tuya/demo/pluginDemo/plugin/uploadPlugin/build/classes/java/main/com/codelang/upload/Hello.class:/Users/codelang/tuya/demo/pluginDemo/plugin/uploadPlugin/build/classes/kotlin/main/com/codelang/upload/Test.class
