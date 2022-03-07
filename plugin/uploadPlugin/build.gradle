@@ -1,14 +1,22 @@
 apply plugin: 'groovy'
-apply plugin: 'kotlin'
+//apply plugin: 'kotlin'
 apply plugin: 'java-gradle-plugin'
 apply plugin: 'maven-publish'
+
+sourceSets {
+    main {
+        groovy {
+            srcDir 'src/main/groovy'
+        }
+    }
+}
 
 dependencies {
     implementation gradleApi()
     implementation localGroovy()
     api "com.android.tools.build:gradle-api:$apgVersion"
     api "com.android.tools.build:gradle:$apgVersion"
-    implementation "org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.30"
+//    implementation "org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.30"
 }
 
 gradlePlugin {
