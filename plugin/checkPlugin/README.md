@@ -1,11 +1,25 @@
 ### 一、依赖配置
 
+目前提供的检查有：
+- so 文件检查
+- 64 位 so 未适配检查
+- 更安全的导出组件检查
+- 未匹配的权限检查
+- uses-sdk 检查
+
+待补充的功能：
+- 大图检测
+- 重复资源检测
+- 清单文件中不存在的类检查
+- 布局文件中不存在的类检查
+- 类/方法找不到检查
+
 配置 maven 镜像源和依赖
 ```java
 buildscript {
     repositories {
         ...
-        // 配上本地 maven 源
+        // maven 源
         maven{
            url "https://raw.githubusercontent.com/MRwangqi/Maven/main"
         }
@@ -66,3 +80,6 @@ ManifestWhite.xml 文件如下：
 
 
 结果会在 build 目录的 checkPlugin 生成一份 check.html 文件，你可以直接查看 demo 生成的结果报告：[https://mrwangqi.github.io/pluginDemo/](https://mrwangqi.github.io/pluginDemo/)
+
+
+
