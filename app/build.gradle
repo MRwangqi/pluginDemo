@@ -1,8 +1,11 @@
 plugins {
-    id 'com.android.application'
+//    id 'com.android.application'
+    id 'com.android.library'
     id 'kotlin-android'
     id 'checkPlugin'
     id 'uploadPlugin'
+    id "maven-publish"
+    id 'uploadGithub'
 }
 
 check{
@@ -13,7 +16,7 @@ android {
     compileSdk 31
 
     defaultConfig {
-        applicationId "com.codelang.includebuildingdemo"
+//        applicationId "com.codelang.includebuildingdemo"
         minSdk 21
         targetSdk 31
         versionCode 1
@@ -38,7 +41,7 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: "libs", include: ["*.jar","*.aar"])
+//    implementation fileTree(dir: "libs", include: ["*.jar","*.aar"])
 
     implementation 'androidx.core:core-ktx:1.6.0'
     implementation 'androidx.appcompat:appcompat:1.3.1'
@@ -54,3 +57,29 @@ dependencies {
 
     implementation 'com.github.MRwangqi.MessageHook:hook:1.0.11'
 }
+
+//afterEvaluate {
+//    publishing {
+//        publications {
+//            // Creates a Maven publication called "release".
+//            release(MavenPublication) {
+//                from components.release
+//                groupId = 'com.codelang.jitpack'
+//                artifactId = 'hook'
+//                version = '1.0'
+//
+//                println("release ---- "+components.release)
+//            }
+//
+//            println("publications ---- "+it)
+//        }
+//
+//        println("publishing ---- "+it)
+//
+//        repositories {
+//            maven {
+//                url = "../build/repo"
+//            }
+//        }
+//    }
+//}

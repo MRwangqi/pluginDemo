@@ -16,6 +16,7 @@ buildscript {
 plugins {
     id "checkPlugin" apply false
     id "uploadPlugin" apply false
+    id "uploadGithub" apply false
 }
 
 task clean(type: Delete) {
