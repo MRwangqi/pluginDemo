@@ -1,4 +1,4 @@
-## 配置 maven 镜像源和依赖
+## 一、配置 maven 镜像源和依赖
 ```java
 buildscript {
     repositories {
@@ -16,7 +16,7 @@ buildscript {
 }
 ```
 
-## 依赖插件
+## 二、依赖插件
 
 目前插件支持两种方式上传：
 
@@ -30,6 +30,7 @@ plugins {
     // apply check 插件
     id 'uploadGithub'
 }
+```
 
 ### 2、上传到 maven
 
@@ -42,8 +43,8 @@ plugins {
     id 'uploadMaven'
 }
 
-## 配置插件
-
+## 三、配置插件
+```
 upload {
     groupId = ""
     artifactId = ""
