@@ -1,8 +1,6 @@
 package com.codelang.upload
 
-import com.android.build.gradle.AppExtension
 import com.android.build.gradle.LibraryExtension
-import com.codelang.upload.config.PublishConfig
 import com.codelang.upload.utils.Util
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -12,7 +10,6 @@ import org.gradle.api.publish.maven.MavenPom
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.tasks.bundling.Jar
 import java.io.File
-import java.net.URI
 
 class UploadGithub : Plugin<Project> {
 
@@ -33,27 +30,24 @@ class UploadGithub : Plugin<Project> {
 
                     publication.from(project.components.findByName("release"))
 
-                    println("release ---- "+project.components.findByName("release"))
                     publication.groupId = "com.aa.bb"
                     publication.artifactId = "haha"
                     publication.version = "1.0.0"
-                   publication.artifact(addSourceJar(project))
+                    publication.artifact(addSourceJar(project))
 
                     //pom config
-//                publication.pom { pom ->
-//                    pom.developers { develops ->
-//                    }
-//                    applyPomDeps(pom = pom, project = project)
-//                }
-
-                    println("publications ---- "+publication)
+                    publication.pom { pom ->
+//                        pom.developers { develops ->
+//                        }
+                        println("----> "+ pom)
+//                        applyPomDeps(pom = pom, project = project)
+                    }
                 }
-                println("publishing ---- "+publishingExtension)
             }
 
             publishingExtension?.repositories {
                 it.maven { repo ->
-                    repo.url = URI.create("file:///Users/codelang/demo/pluginDemo/app/build/repo")
+                    repo.url = project.file("../build/repo").toURI()
                 }
             }
         }
@@ -72,12 +66,15 @@ class UploadGithub : Plugin<Project> {
             //Iterate over the compile dependencies (we don't want the test ones), adding a <dependency> node for each
             scopeMapping.keys.forEach { key ->
                 try {
+                    println("----> "+ key+"---"+project.configurations.getByName(key))
                     project.configurations.getByName(key).allDependencies?.forEach { dependency ->
-                        val dependencyNode = dependenciesNode.appendNode("dependency")
-                        dependencyNode.appendNode("groupId", dependency.group)
-                        dependencyNode.appendNode("artifactId", dependency.name)
-                        dependencyNode.appendNode("version", dependency.version)
-                        dependencyNode.appendNode("scope", scopeMapping[key])
+
+                        println("----> "+ dependency+"---")
+//                        val dependencyNode = dependenciesNode.appendNode("dependency")
+//                        dependencyNode.appendNode("groupId", dependency.group)
+//                        dependencyNode.appendNode("artifactId", dependency.name)
+//                        dependencyNode.appendNode("version", dependency.version)
+//                        dependencyNode.appendNode("scope", scopeMapping[key])
                     }
                 } catch (thr: Throwable) {
 
