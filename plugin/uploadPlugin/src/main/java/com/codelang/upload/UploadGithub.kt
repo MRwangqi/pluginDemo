@@ -1,28 +1,35 @@
 package com.codelang.upload
 
 import com.android.build.gradle.LibraryExtension
+import com.codelang.upload.config.UploadConfig
 import com.codelang.upload.utils.Util
 import groovy.util.Node
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
-import org.gradle.api.artifacts.Dependency
 import org.gradle.api.plugins.JavaPluginConvention
 import org.gradle.api.publish.maven.MavenPom
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.tasks.bundling.Jar
+import org.gradle.internal.impldep.org.apache.http.util.TextUtils
 import java.io.File
 import java.io.InputStreamReader
 
 class UploadGithub : Plugin<Project> {
 
     override fun apply(project: Project) {
+        if (Util.isApplication(project)) {
+            return
+        }
+
         if (!project.plugins.hasPlugin("maven-publish")) {
             project.plugins.apply("maven-publish")
         }
-//        val publishingConfig = project.extensions.create("publishConfig", PublishConfig::class.java)
+        project.extensions.create("upload", UploadConfig::class.java)
 
         project.afterEvaluate {
+            val uploadConfig = project.extensions.findByName("upload") as UploadConfig
+
             val publishingExtension = Util.publishingExtension(project)
 
             publishingExtension?.publications {
@@ -37,9 +44,10 @@ class UploadGithub : Plugin<Project> {
                         publication.from(project.components.findByName("java"))
                     }
 
-                    publication.groupId = "com.aa.bb"
-                    publication.artifactId = "haha"
-                    publication.version = "1.0.0"
+                    publication.groupId = uploadConfig.groupId
+                    publication.artifactId = uploadConfig.artifactId
+                    publication.version = uploadConfig.version
+
                     publication.artifact(addSourceJar(project))
 
                     //pom config
@@ -49,14 +57,21 @@ class UploadGithub : Plugin<Project> {
                         // todo AGP 7.0 的实践效果看，默认就会把 dependencies 下的依赖打入了 pom
                         // todo 所以，这个地方改成，如果 hasPom 为 false 的话，则移除 dependencies
 //                        applyPomDeps(pom = pom, project = project)
-                        removePomDeps(pom)
+                        if (!uploadConfig.hasPomDepend) {
+                            removePomDeps(pom)
+                        }
                     }
                 }
             }
 
+            var url = uploadConfig.url
+            if (url.isEmpty()) {
+                url = "build/repo"
+            }
+
             publishingExtension?.repositories {
                 it.maven { repo ->
-                    repo.url = project.file("../build/repo").toURI()
+                    repo.url = project.file(url).toURI()
                 }
             }
 
@@ -67,7 +82,8 @@ class UploadGithub : Plugin<Project> {
             project.tasks.filter {
                 it.name == "publishMavenPublicationToMavenRepository"
             }.firstOrNull()?.doLast {
-                println("\n可添加依赖使用：\timplementation '${"GroupId"}:${"SdkName"}:${"SdkVersion"}'\n")
+                println("\naar 路径: ${project.file(url).toURI()}")
+                println("可添加依赖使用:\nimplementation '${uploadConfig.groupId}:${uploadConfig.artifactId}:${uploadConfig.version}'\n")
             }
         }
 
