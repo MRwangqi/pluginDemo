@@ -1,6 +1,8 @@
 package com.codelang.upload
 
 import com.android.build.gradle.AppExtension
+import com.android.build.gradle.LibraryExtension
+import com.codelang.upload.config.PublishConfig
 import com.codelang.upload.utils.Util
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -18,6 +20,7 @@ class UploadGithub : Plugin<Project> {
         if (!project.plugins.hasPlugin("maven-publish")) {
             project.plugins.apply("maven-publish")
         }
+//        val publishingConfig = project.extensions.create("publishConfig", PublishConfig::class.java)
 
         project.afterEvaluate {
             val publishingExtension = Util.publishingExtension(project)
@@ -34,7 +37,7 @@ class UploadGithub : Plugin<Project> {
                     publication.groupId = "com.aa.bb"
                     publication.artifactId = "haha"
                     publication.version = "1.0.0"
-//                publication.artifact(addSourceJar(project))
+                   publication.artifact(addSourceJar(project))
 
                     //pom config
 //                publication.pom { pom ->
@@ -50,7 +53,7 @@ class UploadGithub : Plugin<Project> {
 
             publishingExtension?.repositories {
                 it.maven { repo ->
-                    repo.url = URI.create("../build/repo")
+                    repo.url = URI.create("file:///Users/codelang/demo/pluginDemo/app/build/repo")
                 }
             }
         }
@@ -87,7 +90,7 @@ class UploadGithub : Plugin<Project> {
     private fun addSourceJar(project: Project): Task {
         val sourceSet = mutableSetOf<File>()
         if (Util.isAndroidModule(project)) {
-            val appExtension = project.extensions.getByType(AppExtension::class.java)
+            val appExtension = project.extensions.getByType(LibraryExtension::class.java)
             appExtension.sourceSets.filter {
                 it.name == "main"
             }.forEach {
