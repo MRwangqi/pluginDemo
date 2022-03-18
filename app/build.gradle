@@ -14,8 +14,8 @@ upload {
     groupId = "com.aa.bb"
     artifactId = "haha"
     version = "1.0.0"
-    hasPomDepend = true
-    url = "build/repo"
+    githubURL = "git@github.com:MRwangqi/Maven.git"
+    githubBranch = "apk"
 }
 android {
     compileSdk 31

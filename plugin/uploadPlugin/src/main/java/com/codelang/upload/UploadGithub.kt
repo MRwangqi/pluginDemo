@@ -11,17 +11,45 @@ import org.gradle.api.plugins.JavaPluginConvention
 import org.gradle.api.publish.maven.MavenPom
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.tasks.bundling.Jar
-import org.gradle.internal.impldep.org.apache.http.util.TextUtils
 import java.io.File
 import java.io.InputStreamReader
 
 class UploadGithub : Plugin<Project> {
 
-    override fun apply(project: Project) {
-        if (Util.isApplication(project)) {
-            return
+    /**
+     * 复制一个目录及其子目录、文件到另外一个目录
+     * @param src
+     * @param dest
+     * @throws IOException
+     */
+    private fun copyFolder(src: File, dest: File) {
+        if (src.isDirectory()) {
+            if (!dest.exists()) {
+                dest.mkdir();
+            }
+            src.list()?.forEach {
+                val srcFile = File(src, it)
+                val destFile = File(dest, it)
+                // 递归复制
+                copyFolder(srcFile, destFile);
+            }
+        } else {
+            src.runCatching {
+                inputStream().use { input ->
+                    dest.apply {
+                        outputStream().use { output ->
+                            input.copyTo(output)
+                        }
+                    }
+                }
+            }.onFailure {
+                println("error: " + it.message)
+            }
         }
+    }
 
+
+    override fun apply(project: Project) {
         if (!project.plugins.hasPlugin("maven-publish")) {
             project.plugins.apply("maven-publish")
         }
@@ -29,6 +57,8 @@ class UploadGithub : Plugin<Project> {
 
         project.afterEvaluate {
             val uploadConfig = project.extensions.findByName("upload") as UploadConfig
+
+            println(uploadConfig)
 
             val publishingExtension = Util.publishingExtension(project)
 
@@ -82,9 +112,75 @@ class UploadGithub : Plugin<Project> {
             project.tasks.filter {
                 it.name == "publishMavenPublicationToMavenRepository"
             }.firstOrNull()?.doLast {
-                println("\naar 路径: ${project.file(url).toURI()}")
-                println("可添加依赖使用:\nimplementation '${uploadConfig.groupId}:${uploadConfig.artifactId}:${uploadConfig.version}'\n")
+                val aarFile = project.file(url)
+                println("\naar 路径: ${aarFile}")
+                // todo 开始上传 github
+                uploadGithub(aarFile, uploadConfig, project)
             }
+        }
+
+    }
+
+
+    private fun uploadGithub(aarFile: File, uploadConfig: UploadConfig, project: Project) {
+
+        if (uploadConfig.githubURL.isEmpty()) {
+            println("githubURL is Null")
+            return
+        }
+
+        // 获取 repo 的名称
+        val lastIndex = uploadConfig.githubURL.lastIndexOf("/")
+        val lastIndex2 = uploadConfig.githubURL.lastIndexOf(".git")
+        val repo = uploadConfig.githubURL.substring(lastIndex + 1, lastIndex2)
+
+        // 将 aar copy 到 Maven 目录
+        val repoFile = File(project.buildDir.absolutePath + File.separator + repo)
+
+        println("aarFile: " + aarFile.absoluteFile)
+        println("mavenFile: " + repoFile.absoluteFile)
+
+        if (!repoFile.exists()) {
+            project.exec {
+                it.workingDir = project.buildDir
+                if (uploadConfig.githubBranch.isEmpty()) {
+                    it.commandLine("git", "clone", uploadConfig.githubURL)
+                } else {
+                    it.commandLine("git", "clone", "-b", uploadConfig.githubBranch, uploadConfig.githubURL)
+                }
+            }
+        }
+        // 将 aar 拷贝到 repo 目录
+        copyFolder(aarFile, repoFile)
+
+        val arrFilePath = uploadConfig.groupId.replace(".", File.separator) + File.separator + uploadConfig.artifactId
+        // push 到 maven
+        project.exec {
+            it.workingDir = File(project.buildDir.absolutePath + File.separator + "Maven")
+            it.commandLine("git", "add", arrFilePath)
+            val dependency = "implementation '${uploadConfig.groupId}:${uploadConfig.artifactId}:${uploadConfig.version}"
+            it.commandLine("git", "commit-m", "添加 ${dependency}依赖")
+            if (uploadConfig.githubBranch.isEmpty()) {
+                it.commandLine("git", "push")
+            } else {
+                it.commandLine("git", "push", "origin", uploadConfig.githubBranch)
+            }
+
+            // git@github.com:MRwangqi/Maven.git
+            // 获取 repo 的名称
+            val l = uploadConfig.githubURL.lastIndexOf(":")
+            val l2 = uploadConfig.githubURL.lastIndexOf("/")
+            val userName = uploadConfig.githubURL.substring(l + 1, l2)
+
+            println("已上传到 github=${uploadConfig.githubURL} 仓库")
+            println("""
+                maven 镜像源为:
+                
+                maven{
+                   url "https://raw.githubusercontent.com/${userName}/${repo}/${uploadConfig.githubBranch}"
+                }
+            """.trimIndent())
+            println("可添加依赖使用:\nimplementation '${uploadConfig.groupId}:${uploadConfig.artifactId}:${uploadConfig.version}'\n")
         }
 
     }
@@ -162,4 +258,6 @@ class UploadGithub : Plugin<Project> {
             from(sourceSet)
         }
     }
+
+
 }
