@@ -1,6 +1,4 @@
-### 一、依赖配置
-
-配置 maven 镜像源和依赖
+## 配置 maven 镜像源和依赖
 ```java
 buildscript {
     repositories {
@@ -18,7 +16,13 @@ buildscript {
 }
 ```
 
-然后在模块工程的 build.gradle 中依赖插件:
+## 依赖插件
+
+目前插件支持两种方式上传：
+
+### 1、上传到 github
+
+在模块工程的 build.gradle 中依赖插件:
 
 ```java
 plugins {
@@ -26,6 +30,19 @@ plugins {
     // apply check 插件
     id 'uploadGithub'
 }
+
+### 2、上传到 maven
+
+在模块工程的 build.gradle 中依赖插件:
+
+```java
+plugins {
+    id 'com.android.library'
+    // apply check 插件
+    id 'uploadGithub'
+}
+
+## 配置插件
 
 upload {
     groupId = ""

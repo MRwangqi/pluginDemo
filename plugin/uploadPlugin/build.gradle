@@ -22,8 +22,8 @@ dependencies {
 gradlePlugin {
     plugins {
         nexus {
-            id = 'uploadPlugin'
-            implementationClass = 'com.codelang.upload.UploadPlugin'
+            id = 'uploadMaven'
+            implementationClass = 'com.codelang.upload.UploadMaven'
         }
         github {
             id = 'uploadGithub'
