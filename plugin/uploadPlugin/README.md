@@ -24,7 +24,7 @@ buildscript {
 plugins {
     id 'com.android.library'
     // apply check 插件
-    id 'uploadPlugin'
+    id 'uploadGithub'
 }
 
 upload {
