@@ -42,8 +42,10 @@ plugins {
     // apply check 插件
     id 'uploadMaven'
 }
+```
 
 ## 三、配置插件
+
 ```
 upload {
     groupId = ""
