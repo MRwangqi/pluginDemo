@@ -39,7 +39,7 @@ plugins {
 plugins {
     id 'com.android.library'
     // apply check 插件
-    id 'uploadGithub'
+    id 'uploadMaven'
 }
 
 ## 配置插件
