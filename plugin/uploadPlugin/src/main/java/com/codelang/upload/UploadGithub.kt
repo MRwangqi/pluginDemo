@@ -156,7 +156,10 @@ class UploadGithub : Plugin<Project> {
         val arrFilePath = uploadConfig.groupId.replace(".", File.separator) + File.separator + uploadConfig.artifactId
         // push 到 maven
         project.exec {
-            it.workingDir = File(project.buildDir.absolutePath + File.separator + "Maven")
+            it.workingDir = File(project.buildDir.absolutePath + File.separator + repo)
+
+            println(" arrFilePath=${arrFilePath} ${it.workingDir.exists()}  ${it.workingDir}")
+
             it.commandLine("git", "add", arrFilePath)
             val dependency = "implementation '${uploadConfig.groupId}:${uploadConfig.artifactId}:${uploadConfig.version}"
             it.commandLine("git", "commit-m", "添加 ${dependency}依赖")
