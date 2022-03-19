@@ -10,7 +10,7 @@ buildscript {
     }
     dependencies {
         classpath "com.android.tools.build:gradle:7.0.4"
-        // 依赖 check 插件
+        // 依赖 upload 插件
         classpath "com.github.MRwangqi:uploadPlugin:1.0.0"
     }
 }
@@ -61,7 +61,6 @@ plugins {
      // 配置上传到 maven nexus
     id 'uploadMaven'
 }
-```
 
 upload {
     // 必选
