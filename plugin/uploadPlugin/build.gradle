@@ -3,13 +3,7 @@ apply plugin: 'kotlin'
 apply plugin: 'java-gradle-plugin'
 apply plugin: 'maven-publish'
 
-//sourceSets {
-//    main {
-//        groovy {
-//            srcDir 'src/main/groovy'
-//        }
-//    }
-//}
+
 
 dependencies {
     implementation gradleApi()

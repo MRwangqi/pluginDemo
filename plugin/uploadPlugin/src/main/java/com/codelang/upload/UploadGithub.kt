@@ -2,6 +2,9 @@ package com.codelang.upload
 
 import com.android.build.gradle.LibraryExtension
 import com.codelang.upload.config.UploadConfig
+import com.codelang.upload.task.androidSourcesJar
+import com.codelang.upload.task.emptySourcesJar
+import com.codelang.upload.task.javaSourcesJar
 import com.codelang.upload.utils.FileUtils
 import com.codelang.upload.utils.Util
 import groovy.util.Node
@@ -9,9 +12,11 @@ import org.eclipse.jgit.api.Git
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
+import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.plugins.JavaPluginConvention
 import org.gradle.api.publish.maven.MavenPom
 import org.gradle.api.publish.maven.MavenPublication
+import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.tasks.bundling.Jar
 import java.io.File
 import java.io.InputStreamReader
@@ -47,7 +52,7 @@ class UploadGithub : Plugin<Project> {
                     publication.artifactId = uploadConfig.artifactId
                     publication.version = uploadConfig.version
 
-                    publication.artifact(addSourceJar(project))
+                    publication.artifact(addSourceJar(uploadConfig.sourceJar,project))
 
                     //pom config
                     publication.pom { pom ->
@@ -222,6 +227,17 @@ class UploadGithub : Plugin<Project> {
         }
     }
 
+    private fun addSourceJar(sourceJar: Boolean, project: Project): Task {
+        if (!sourceJar) {
+            return project.emptySourcesJar()
+        }
+        return if (Util.isAndroidModule(project)) {
+            project.androidSourcesJar()
+        } else {
+            project.javaSourcesJar()
+        }
+    }
+
     private fun addSourceJar(project: Project): Task {
         val sourceSet = mutableSetOf<File>()
         if (Util.isAndroidModule(project)) {
@@ -243,6 +259,5 @@ class UploadGithub : Plugin<Project> {
             from(sourceSet)
         }
     }
-
 
 }

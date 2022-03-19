@@ -65,10 +65,7 @@ class UploadMaven : Plugin<Project> {
                 }
             }
 
-            var url = uploadConfig.url
-            if (url.isEmpty()) {
-                url = "build/repo"
-            }
+            val url = "../build/repo"
 
             publishingExtension?.repositories {
                 it.maven { repo ->
