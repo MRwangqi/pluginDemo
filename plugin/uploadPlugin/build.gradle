@@ -17,6 +17,8 @@ dependencies {
     api "com.android.tools.build:gradle-api:$apgVersion"
     api "com.android.tools.build:gradle:$apgVersion"
     implementation "org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.30"
+    implementation group: 'org.eclipse.jgit', name: 'org.eclipse.jgit', version: '6.1.0.202203080745-r'
+
 }
 
 gradlePlugin {
