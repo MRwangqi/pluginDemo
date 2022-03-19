@@ -27,10 +27,29 @@ buildscript {
 ```java
 plugins {
     id 'com.android.library'
-    // apply check 插件
+    // 配置上传到 github
     id 'uploadGithub'
 }
+
+upload {
+    // 必选
+    groupId = ""
+    // 必选
+    artifactId = ""
+    // 必选
+    version = ""
+    // 模块下的依赖是否打入 pom : (可选，默认会打入)
+    hasPomDepend = true
+    // 模块是否打入 source 源码: (可选，默认会打入)
+    sourceJar = true
+    // github 仓库链接:(可选，如果不配置的话则发布到 project 的 build/repo 目录)
+    githubURL = "git@github.com:MRwangqi/Maven.git"
+    // github 仓库分支:(可选，如果不配置的话则发布到 githubURL 的 main 分支)
+    githubBranch = "apk"
+}
 ```
+
+
 
 ### 2、上传到 maven
 
@@ -39,24 +58,29 @@ plugins {
 ```java
 plugins {
     id 'com.android.library'
-    // apply check 插件
+     // 配置上传到 maven nexus
     id 'uploadMaven'
 }
 ```
 
-## 三、配置插件
-
-```
 upload {
-    groupId = ""
-    artifactId = ""
-    version = ""
-    hasPomDepend = true
-    url = "build/repo"
+    // 必选
+   groupId = ""
+    // 必选
+   artifactId = ""
+    // 必选
+   version = ""
+   // 模块下的依赖是否打入 pom : (可选，默认会打入)
+   hasPomDepend = true
+   // 模块是否打入 source 源码: (可选，默认会打入)
+   sourceJar = true
+
+   // 必选
+   nexusURL = ""
+    // 必选
+   nexusName = ""
+    // 必选
+   nexusPsw = ""
 }
 ```
 
-注意：
-- 插件不支持 application 发组件
-- 默认 hasPomDepend 为 true，可以不指定
-- url 为指定的 aar 本地相对路径，不指定的话，默认为 build/repo 路径

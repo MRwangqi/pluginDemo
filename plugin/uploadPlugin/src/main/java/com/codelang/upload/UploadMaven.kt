@@ -1,28 +1,23 @@
 package com.codelang.upload
 
 
-import com.android.build.gradle.LibraryExtension
 import com.codelang.upload.config.UploadConfig
+import com.codelang.upload.task.androidSourcesJar
+import com.codelang.upload.task.emptySourcesJar
+import com.codelang.upload.task.javaSourcesJar
 import com.codelang.upload.utils.Util
 import groovy.util.Node
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
-import org.gradle.api.plugins.JavaPluginConvention
 import org.gradle.api.publish.maven.MavenPom
 import org.gradle.api.publish.maven.MavenPublication
-import org.gradle.api.tasks.bundling.Jar
-import org.gradle.internal.impldep.org.apache.http.util.TextUtils
-import java.io.File
 import java.io.InputStreamReader
+import java.net.URI
 
 class UploadMaven : Plugin<Project> {
 
     override fun apply(project: Project) {
-        if (Util.isApplication(project)) {
-            return
-        }
-
         if (!project.plugins.hasPlugin("maven-publish")) {
             project.plugins.apply("maven-publish")
         }
@@ -31,8 +26,24 @@ class UploadMaven : Plugin<Project> {
         project.afterEvaluate {
             val uploadConfig = project.extensions.findByName("upload") as UploadConfig
 
-            val publishingExtension = Util.publishingExtension(project)
+            if (uploadConfig.groupId.isEmpty() || uploadConfig.artifactId.isEmpty() || uploadConfig.version.isEmpty()) {
+                println("upload 配置的 GAV 有空值:")
+                println("groupId=${uploadConfig.groupId}")
+                println("artifactId=${uploadConfig.artifactId}")
+                println("version=${uploadConfig.version}")
+                return@afterEvaluate
+            }
 
+            if (uploadConfig.nexusURL.isEmpty() || uploadConfig.nexusName.isEmpty() || uploadConfig.nexusPsw.isEmpty()) {
+                println("upload 配置的 nexus 有空值:")
+                println("nexusURL=${uploadConfig.nexusURL}")
+                println("nexusName=${uploadConfig.nexusName}")
+                println("nexusPsw=${uploadConfig.nexusPsw}")
+                return@afterEvaluate
+            }
+
+
+            val publishingExtension = Util.publishingExtension(project)
             publishingExtension?.publications {
                 it.register(
                         "maven",
@@ -49,15 +60,11 @@ class UploadMaven : Plugin<Project> {
                     publication.artifactId = uploadConfig.artifactId
                     publication.version = uploadConfig.version
 
-                    publication.artifact(addSourceJar(project))
+                    publication.artifact(addSourceJar(uploadConfig.sourceJar, project))
 
                     //pom config
                     publication.pom { pom ->
                         addDeveloper(pom)
-
-                        // todo AGP 7.0 的实践效果看，默认就会把 dependencies 下的依赖打入了 pom
-                        // todo 所以，这个地方改成，如果 hasPom 为 false 的话，则移除 dependencies
-//                        applyPomDeps(pom = pom, project = project)
                         if (!uploadConfig.hasPomDepend) {
                             removePomDeps(pom)
                         }
@@ -65,11 +72,15 @@ class UploadMaven : Plugin<Project> {
                 }
             }
 
-            val url = "../build/repo"
 
             publishingExtension?.repositories {
                 it.maven { repo ->
-                    repo.url = project.file(url).toURI()
+                    repo.url = URI.create(uploadConfig.nexusURL)
+                    repo.credentials { credential ->
+                        credential.username = uploadConfig.nexusName
+                        credential.password = uploadConfig.nexusPsw
+                    }
+
                 }
             }
 
@@ -77,42 +88,17 @@ class UploadMaven : Plugin<Project> {
                 it.dependsOn("publishMavenPublicationToMavenRepository")
             }
 
-            project.tasks.filter {
+            project.tasks.firstOrNull {
                 it.name == "publishMavenPublicationToMavenRepository"
-            }.firstOrNull()?.doLast {
-                println("\naar 路径: ${project.file(url).toURI()}")
-                println("可添加依赖使用:\nimplementation '${uploadConfig.groupId}:${uploadConfig.artifactId}:${uploadConfig.version}'\n")
-            }
-        }
-
-    }
-
-
-    private val scopeMapping = mapOf<String, String?>(
-            "api" to "compile",
-            "implementation" to "compile",
-            "compile" to "compile"
-    )
-
-    private fun applyPomDeps(pom: MavenPom, project: Project) {
-        pom.withXml { xml ->
-            val dependenciesNode = xml.asNode().appendNode("dependencies")
-            //Iterate over the compile dependencies (we don't want the test ones), adding a <dependency> node for each
-            scopeMapping.keys.forEach { key ->
-                try {
-                    project.configurations.getByName(key).allDependencies?.forEach { dependency ->
-                        val dependencyNode = dependenciesNode.appendNode("dependency")
-                        dependencyNode.appendNode("groupId", dependency.group)
-                        dependencyNode.appendNode("artifactId", dependency.name)
-                        dependencyNode.appendNode("version", dependency.version)
-                        dependencyNode.appendNode("scope", scopeMapping[key])
-                    }
-                } catch (thr: Throwable) {
-
-                }
+            }?.doLast {
+                println(
+                        """可添加依赖使用:
+                           implementation '${uploadConfig.groupId}:${uploadConfig.artifactId}:${uploadConfig.version}' 
+                """.trimIndent())
             }
         }
     }
+
 
     private fun removePomDeps(pom: MavenPom) {
         pom.withXml {
@@ -139,25 +125,14 @@ class UploadMaven : Plugin<Project> {
         }
     }
 
-    private fun addSourceJar(project: Project): Task {
-        val sourceSet = mutableSetOf<File>()
-        if (Util.isAndroidModule(project)) {
-            val appExtension = project.extensions.getByType(LibraryExtension::class.java)
-            appExtension.sourceSets.filter {
-                it.name == "main"
-            }.forEach {
-                it.java.include("**/*.kt")
-                sourceSet.addAll(it.java.srcDirs)
-            }
-        } else {
-            val srcDirs = project.extensions.getByType(JavaPluginConvention::class.java)
-                    .sourceSets.getByName("main").java.srcDirs
-            sourceSet.addAll(srcDirs)
+    private fun addSourceJar(sourceJar: Boolean, project: Project): Task {
+        if (!sourceJar) {
+            return project.emptySourcesJar()
         }
-        return project.tasks.create("sourceJar", Jar::class.java).apply {
-            classifier = "sources"
-            version = ""
-            from(sourceSet)
+        return if (Util.isAndroidModule(project)) {
+            project.androidSourcesJar()
+        } else {
+            project.javaSourcesJar()
         }
     }
 }

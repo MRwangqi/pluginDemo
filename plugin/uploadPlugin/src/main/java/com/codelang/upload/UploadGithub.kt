@@ -1,6 +1,5 @@
 package com.codelang.upload
 
-import com.android.build.gradle.LibraryExtension
 import com.codelang.upload.config.UploadConfig
 import com.codelang.upload.task.androidSourcesJar
 import com.codelang.upload.task.emptySourcesJar
@@ -12,12 +11,8 @@ import org.eclipse.jgit.api.Git
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
-import org.gradle.api.plugins.JavaPlugin
-import org.gradle.api.plugins.JavaPluginConvention
 import org.gradle.api.publish.maven.MavenPom
 import org.gradle.api.publish.maven.MavenPublication
-import org.gradle.api.tasks.TaskProvider
-import org.gradle.api.tasks.bundling.Jar
 import java.io.File
 import java.io.InputStreamReader
 
@@ -33,6 +28,15 @@ class UploadGithub : Plugin<Project> {
 
         project.afterEvaluate {
             val uploadConfig = project.extensions.findByName("upload") as UploadConfig
+
+            if (uploadConfig.groupId.isEmpty() || uploadConfig.artifactId.isEmpty() || uploadConfig.version.isEmpty()) {
+                println("upload 配置的 GAV 有空值:")
+                println("groupId=${uploadConfig.groupId}")
+                println("artifactId=${uploadConfig.artifactId}")
+                println("version=${uploadConfig.version}")
+                return@afterEvaluate
+            }
+
 
             val publishingExtension = Util.publishingExtension(project)
 
@@ -52,7 +56,7 @@ class UploadGithub : Plugin<Project> {
                     publication.artifactId = uploadConfig.artifactId
                     publication.version = uploadConfig.version
 
-                    publication.artifact(addSourceJar(uploadConfig.sourceJar,project))
+                    publication.artifact(addSourceJar(uploadConfig.sourceJar, project))
 
                     //pom config
                     publication.pom { pom ->
@@ -93,9 +97,8 @@ class UploadGithub : Plugin<Project> {
 
 
     private fun uploadGithub(aarFile: File, uploadConfig: UploadConfig, project: Project) {
-
         if (uploadConfig.githubURL.isEmpty()) {
-            println("githubURL is Null")
+            println("githubURL is Null,aar 已发布到本地路径:${aarFile.absolutePath}")
             return
         }
 
@@ -235,28 +238,6 @@ class UploadGithub : Plugin<Project> {
             project.androidSourcesJar()
         } else {
             project.javaSourcesJar()
-        }
-    }
-
-    private fun addSourceJar(project: Project): Task {
-        val sourceSet = mutableSetOf<File>()
-        if (Util.isAndroidModule(project)) {
-            val appExtension = project.extensions.getByType(LibraryExtension::class.java)
-            appExtension.sourceSets.filter {
-                it.name == "main"
-            }.forEach {
-                it.java.include("**/*.kt")
-                sourceSet.addAll(it.java.srcDirs)
-            }
-        } else {
-            val srcDirs = project.extensions.getByType(JavaPluginConvention::class.java)
-                    .sourceSets.getByName("main").java.srcDirs
-            sourceSet.addAll(srcDirs)
-        }
-        return project.tasks.create("sourceJar", Jar::class.java).apply {
-            classifier = "sources"
-            version = ""
-            from(sourceSet)
         }
     }
 

@@ -8,9 +8,8 @@ dependencyResolutionManagement {
 }
 rootProject.name = "pluginDemo"
 include ':app'
-
+include ':java-lib'
 
 includeBuild("./Plugin")
 
-//include ':Plugin'
-//include ':Plugin:checkPlugin'
+
