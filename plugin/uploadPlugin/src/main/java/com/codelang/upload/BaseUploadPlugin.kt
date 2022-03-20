@@ -87,11 +87,7 @@ abstract class BaseUploadPlugin : Plugin<Project> {
             publishingExtension?.repositories {
                 it.maven { repo ->
                     if (uploadConfig.nexusURL.startsWith("http")) {
-                        // 反射设置当前允许 http 不安全协议
-                        val method = repo::class.java.methods.firstOrNull {
-                            it.name == "setAllowInsecureProtocol"
-                        }
-                        method?.invoke(repo, true)
+                        repo.isAllowInsecureProtocol = true
                     }
 
                     if (isCredentials(uploadConfig)) {
