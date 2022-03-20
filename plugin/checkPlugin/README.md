@@ -13,7 +13,7 @@ buildscript {
     dependencies {
         classpath "com.android.tools.build:gradle:7.0.4"
         // 依赖 check 插件
-        classpath "com.github.MRwangqi:checkPlugin:1.0.0"
+        classpath "com.github.MRwangqi:checkPlugin:1.0.1"
     }
 }
 ```

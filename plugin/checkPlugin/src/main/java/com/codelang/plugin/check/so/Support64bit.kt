@@ -38,14 +38,14 @@ class Support64bit : ISoFile {
                 val soName = it.fileName
 
                 val isSupport = when {
-                    soName.contains("x86") -> {
-                        list.contains(soName.replace("x86", "arm64-v8a")) && list.contains(soName.replace("x86", "x86_64"))
+                    soName.contains("/x86/") -> {
+                        list.contains(soName.replace("/x86/", "/arm64-v8a/")) || list.contains(soName.replace("/x86/", "/x86_64/"))
                     }
-                    soName.contains("armeabi") -> {
-                        list.contains(soName.replace("armeabi", "arm64-v8a")) && list.contains(soName.replace("armeabi", "x86_64"))
+                    soName.contains("/armeabi/") -> {
+                        list.contains(soName.replace("armeabi", "/arm64-v8a/")) || list.contains(soName.replace("/armeabi/", "/x86_64/"))
                     }
-                    soName.contains("armeabi-v7a") -> {
-                        list.contains(soName.replace("armeabi-v7a", "arm64-v8a")) && list.contains(soName.replace("armeabi-v7a", "x86_64"))
+                    soName.contains("/armeabi-v7a/") -> {
+                        list.contains(soName.replace("/armeabi-v7a/", "/arm64-v8a/")) || list.contains(soName.replace("/armeabi-v7a/", "/x86_64/"))
                     }
                     else -> {
                         false
