@@ -86,5 +86,5 @@ upload {
 >  ./gradlew :android-lib:upload -Pname=${nexusName} -Ppsw=${nexusPsw} -Purl=${nexusURL}
 
 例如要打包 android-lib 模块，用户名和密码都是 admin，则命令行为:
-> ./gradlew :android-lib:upload -Pname=admin -Ppsw=admin -Purl==http://localhost:8081/repository/android/
+> ./gradlew :android-lib:upload -Pname=admin -Ppsw=admin -Purl=http://localhost:8081/repository/android/
 
