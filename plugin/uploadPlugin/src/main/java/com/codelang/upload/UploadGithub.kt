@@ -17,82 +17,20 @@ import java.io.File
 import java.io.InputStreamReader
 
 
-class UploadGithub : Plugin<Project> {
+class UploadGithub : BaseUploadPlugin() {
 
 
-    override fun apply(project: Project) {
-        if (!project.plugins.hasPlugin("maven-publish")) {
-            project.plugins.apply("maven-publish")
-        }
-        project.extensions.create("upload", UploadConfig::class.java)
+    override fun isSupportUpload(uploadConfig: UploadConfig): Boolean {
+        return true
+    }
 
-        project.afterEvaluate {
-            val uploadConfig = project.extensions.findByName("upload") as UploadConfig
+    override fun isCredentials(uploadConfig: UploadConfig): Boolean {
+        return false
+    }
 
-            if (uploadConfig.groupId.isEmpty() || uploadConfig.artifactId.isEmpty() || uploadConfig.version.isEmpty()) {
-                println("upload 配置的 GAV 有空值:")
-                println("groupId=${uploadConfig.groupId}")
-                println("artifactId=${uploadConfig.artifactId}")
-                println("version=${uploadConfig.version}")
-                return@afterEvaluate
-            }
-
-
-            val publishingExtension = Util.publishingExtension(project)
-
-            publishingExtension?.publications {
-                it.register(
-                        "maven",
-                        MavenPublication::class.java
-                ) { publication ->
-
-                    if (Util.isAndroidModule(project)) {
-                        publication.from(project.components.findByName("release"))
-                    } else {
-                        publication.from(project.components.findByName("java"))
-                    }
-
-                    publication.groupId = uploadConfig.groupId
-                    publication.artifactId = uploadConfig.artifactId
-                    publication.version = uploadConfig.version
-
-                    publication.artifact(addSourceJar(uploadConfig.sourceJar, project))
-
-                    //pom config
-                    publication.pom { pom ->
-                        addDeveloper(pom)
-
-                        // todo AGP 7.0 的实践效果看，默认就会把 dependencies 下的依赖打入了 pom
-                        // todo 所以，这个地方改成，如果 hasPom 为 false 的话，则移除 dependencies
-//                        applyPomDeps(pom = pom, project = project)
-                        if (!uploadConfig.hasPomDepend) {
-                            removePomDeps(pom)
-                        }
-                    }
-                }
-            }
-
-            val mavenUrl = "../build/repo"
-
-            publishingExtension?.repositories {
-                it.maven { repo ->
-                    repo.url = project.file(mavenUrl).toURI()
-                }
-            }
-
-            project.task("upload") {
-                it.dependsOn("publishMavenPublicationToMavenRepository")
-            }
-
-            project.tasks.filter {
-                it.name == "publishMavenPublicationToMavenRepository"
-            }.firstOrNull()?.doLast {
-                val aarFile = project.file(mavenUrl)
-                //  开始上传 github
-                uploadGithub(aarFile, uploadConfig, project)
-            }
-        }
-
+    override fun uploadComplete(uploadConfig: UploadConfig, mavenUrl: String, project: Project) {
+        val aarFile = project.file(mavenUrl)
+        uploadGithub(aarFile, uploadConfig, project)
     }
 
 
@@ -178,67 +116,6 @@ class UploadGithub : Plugin<Project> {
                 implementation '${uploadConfig.groupId}:${uploadConfig.artifactId}:${uploadConfig.version}'
             """.trimIndent())
 
-    }
-
-
-    private fun addPomDeps(pom: MavenPom, project: Project) {
-        val scopeMapping = mapOf<String, String?>(
-                "api" to "compile",
-                "implementation" to "compile",
-                "compile" to "compile"
-        )
-        pom.withXml { xml ->
-            val dependenciesNode = xml.asNode().appendNode("dependencies")
-            scopeMapping.keys.forEach { key ->
-                try {
-                    project.configurations.getByName(key).allDependencies.forEach { dependency ->
-                        val dependencyNode = dependenciesNode.appendNode("dependency")
-                        dependencyNode.appendNode("groupId", dependency.group)
-                        dependencyNode.appendNode("artifactId", dependency.name)
-                        dependencyNode.appendNode("version", dependency.version)
-                        dependencyNode.appendNode("scope", scopeMapping[key])
-                    }
-                } catch (thr: Throwable) {
-
-                }
-            }
-        }
-    }
-
-    private fun removePomDeps(pom: MavenPom) {
-        pom.withXml {
-            val root = it.asNode()
-            val dependenciesNode = root.children().filter {
-                (it is Node) && it.name().toString().contains("dependencies")
-            }.firstOrNull()
-            if (dependenciesNode != null) {
-                root.remove(dependenciesNode as Node)
-            }
-        }
-    }
-
-    private fun addDeveloper(pom: MavenPom) {
-        pom.developers {
-            it.developer {
-                val p = Runtime.getRuntime().exec("git config user.email")
-                p.waitFor()
-                if (p.exitValue() == 0) {
-                    it.email.set(InputStreamReader(p.inputStream).readText().trim())
-                }
-
-            }
-        }
-    }
-
-    private fun addSourceJar(sourceJar: Boolean, project: Project): Task {
-        if (!sourceJar) {
-            return project.emptySourcesJar()
-        }
-        return if (Util.isAndroidModule(project)) {
-            project.androidSourcesJar()
-        } else {
-            project.javaSourcesJar()
-        }
     }
 
 }

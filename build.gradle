@@ -4,6 +4,10 @@ buildscript {
         google()
         mavenCentral()
         mavenLocal()
+        maven {
+            allowInsecureProtocol = true
+            url "http://localhost:8081/repository/android/"
+        }
     }
     dependencies {
         classpath "com.android.tools.build:gradle:7.0.4"

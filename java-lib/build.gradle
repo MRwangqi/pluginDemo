@@ -13,4 +13,6 @@ upload {
     groupId = "com.aa.bb"
     artifactId = "java_lib"
     version = "1.0.0"
+//    githubURL = "git@github.com:MRwangqi/Maven.git"
+//    githubBranch = "apk"
 }

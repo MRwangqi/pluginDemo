@@ -42,7 +42,7 @@ afterEvaluate {
 
         repositories {
             maven {
-                url = uri(mavenLocal().url)
+                url = "../../build/Maven"
             }
         }
     }
