@@ -124,7 +124,7 @@ abstract class BaseUploadPlugin : Plugin<Project> {
     abstract fun isSupportUpload(uploadConfig: UploadConfig): Boolean
 
 
-    abstract fun isCredentials(uploadConfig: UploadConfig):Boolean
+    abstract fun isCredentials(uploadConfig: UploadConfig): Boolean
 
 
     abstract fun uploadComplete(uploadConfig: UploadConfig, mavenUrl: String, project: Project)
@@ -155,7 +155,20 @@ abstract class BaseUploadPlugin : Plugin<Project> {
                     if (dependency is DefaultProjectDependency) {
                         val buildGradle = File(dependency.dependencyProject.projectDir, "build.gradle")
                         // todo 正则匹配拿到 upload 的 GAV
-                        println(buildGradle.readText())
+
+                        val gav = getGAV(buildGradle.readText())
+                        if (gav == null) {
+                            println("未找到 ${dependency.dependencyProject.projectDir}/build.gradle 文件下的 upload GAV 信息")
+                        } else {
+                            val group = gav.first
+                            val artifactId =  gav.second
+                            val version = gav.third
+                            val dependencyNode = dependenciesNode?.appendNode("dependency")
+                            dependencyNode?.appendNode("groupId", group)
+                            dependencyNode?.appendNode("artifactId", artifactId)
+                            dependencyNode?.appendNode("version", version)
+                            dependencyNode?.appendNode("scope", scopeMapping[key])
+                        }
 
                     } else {
                         val dependencyNode = dependenciesNode?.appendNode("dependency")
@@ -167,6 +180,36 @@ abstract class BaseUploadPlugin : Plugin<Project> {
                 }
             }
         }
+    }
+
+
+    private fun getGAV(text: String): Triple<String, String, String>? {
+        var groupId: String? = null
+        var artifactId: String? = null
+        var version: String? = null
+        Regex("upload\\s+\\{.+?groupId\\s*=\\s*\"(.+?)\".+?\\}",
+                RegexOption.DOT_MATCHES_ALL)
+                .find(text)?.groupValues?.let {
+                    groupId = it[1]
+                }
+
+        Regex("upload\\s+\\{.+?artifactId\\s*=\\s*\"(.+?)\".+?\\}",
+                RegexOption.DOT_MATCHES_ALL)
+                .find(text)?.groupValues?.let {
+                    artifactId = it[1]
+                }
+
+        Regex("upload\\s+\\{.+?version\\s*=\\s*\"(.+?)\".+?\\}",
+                RegexOption.DOT_MATCHES_ALL)
+                .find(text)?.groupValues?.let {
+                    version = it[1]
+                }
+
+        if (groupId.isNullOrEmpty() || artifactId.isNullOrEmpty() || version.isNullOrEmpty()) {
+            return null
+        }
+
+        return Triple(groupId!!, artifactId!!, version!!)
     }
 
     private fun removePomDeps(pom: MavenPom) {
