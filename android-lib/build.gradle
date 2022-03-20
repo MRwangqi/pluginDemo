@@ -7,9 +7,9 @@ plugins {
 upload {
     groupId = "com.codelang.library"
     artifactId = "android_lib"
-    version = "1.0.4"
+    version = "1.0.5"
 
-    nexusURL = "http://localhost:8081/repository/android/"
+//    nexusURL = "http://localhost:8081/repository/android/"
 //    nexusName = "admin"
 //    nexusPsw = "admin"
 }

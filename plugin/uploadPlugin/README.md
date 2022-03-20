@@ -83,8 +83,8 @@ upload {
 ```
 
 将 nexus 的 name 和 psw 配置到 build.gradle 会有一定的风险，所以，uploadMaven 也支持通过命令参数来输入：
->  ./gradlew :android-lib:upload -Pname=${nexusName} -Ppsw=${nexusPsw}
+>  ./gradlew :android-lib:upload -Pname=${nexusName} -Ppsw=${nexusPsw} -Purl=${nexusURL}
 
 例如要打包 android-lib 模块，用户名和密码都是 admin，则命令行为:
-> ./gradlew :android-lib:upload -Pname=admin -Ppsw=admin
+> ./gradlew :android-lib:upload -Pname=admin -Ppsw=admin -Purl==http://localhost:8081/repository/android/
 
