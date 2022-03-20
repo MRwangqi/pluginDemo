@@ -149,13 +149,9 @@ abstract class BaseUploadPlugin : Plugin<Project> {
 
             scopeMapping.keys.forEach { key ->
                 project.configurations.getByName(key).dependencies.forEach { dependency ->
-
-                    println("---> " + dependency)
-
                     if (dependency is DefaultProjectDependency) {
                         val buildGradle = File(dependency.dependencyProject.projectDir, "build.gradle")
                         // todo 正则匹配拿到 upload 的 GAV
-
                         val gav = getGAV(buildGradle.readText())
                         if (gav == null) {
                             println("未找到 ${dependency.dependencyProject.projectDir}/build.gradle 文件下的 upload GAV 信息")

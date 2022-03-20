@@ -42,10 +42,11 @@ upload {
     hasPomDepend = true
     // 模块是否打入 source 源码: (可选，默认会打入)
     sourceJar = true
-    // github 仓库链接:(可选，如果不配置的话则发布到 project 的 build/repo 目录)
-    githubURL = "git@github.com:MRwangqi/Maven.git"
-    // github 仓库分支:(可选，如果不配置的话则发布到 githubURL 的 main 分支)
-    githubBranch = "apk"
+
+    // github 仓库链接:(可选，如果不配置的话则发布到 project 下的 build/repo 目录)
+    githubURL = ""
+    // github 仓库分支:(可选，如果不配置的话则以仓库当前配置的分支为准)
+    githubBranch = ""
 }
 ```
 
@@ -74,7 +75,7 @@ upload {
    // 模块是否打入 source 源码: (可选，默认会打入)
    sourceJar = true
 
-   // 必选
+   // nexus 地址 (可选，如果不配置的话则发布到 project 下的 build/repo 目录)
    nexusURL = ""
     // 必选
    nexusName = ""
