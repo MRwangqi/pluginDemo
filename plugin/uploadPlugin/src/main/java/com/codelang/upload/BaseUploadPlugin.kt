@@ -30,8 +30,8 @@ abstract class BaseUploadPlugin : Plugin<Project> {
         if (!project.plugins.hasPlugin("maven-publish")) {
             project.plugins.apply("maven-publish")
         }
-        project.extensions.create("upload", UploadConfig::class.java)
 
+        project.extensions.create("upload", UploadConfig::class.java)
 
         project.afterEvaluate {
             val uploadConfig = project.extensions.findByName("upload") as UploadConfig
@@ -45,7 +45,7 @@ abstract class BaseUploadPlugin : Plugin<Project> {
             }
 
 
-            if (!isSupportUpload(uploadConfig)) {
+            if (!isSupportUpload(uploadConfig,project)) {
                 return@afterEvaluate
             }
 
@@ -121,7 +121,7 @@ abstract class BaseUploadPlugin : Plugin<Project> {
     }
 
 
-    abstract fun isSupportUpload(uploadConfig: UploadConfig): Boolean
+    abstract fun isSupportUpload(uploadConfig: UploadConfig,project: Project): Boolean
 
 
     abstract fun isCredentials(uploadConfig: UploadConfig): Boolean

@@ -7,8 +7,21 @@ import java.net.URI
 
 class UploadMaven : BaseUploadPlugin() {
 
+    private val PARAM_NAME = "name"
+    private val PARAM_PSW = "psw"
 
-    override fun isSupportUpload(uploadConfig: UploadConfig): Boolean {
+    override fun isSupportUpload(uploadConfig: UploadConfig, project: Project): Boolean {
+        // ./gradlew upload -Pname=admin -Ppsw=admin
+        val params = project.gradle.startParameter.projectProperties
+
+        if (params.containsKey(PARAM_NAME)) {
+            uploadConfig.nexusName = params[PARAM_NAME] ?: ""
+        }
+        if (params.containsKey(PARAM_PSW)) {
+            uploadConfig.nexusPsw = params[PARAM_PSW] ?: ""
+        }
+
+
         if (uploadConfig.nexusURL.isEmpty() ||
                 uploadConfig.nexusName.isEmpty() ||
                 uploadConfig.nexusPsw.isEmpty()) {
