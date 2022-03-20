@@ -4,13 +4,17 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
         maven { url 'https://jitpack.io' }
+        maven {
+            allowInsecureProtocol = true
+            url "http://localhost:8081/repository/android/"
+        }
     }
 }
 rootProject.name = "pluginDemo"
 include ':app'
-
+include ':java-lib'
 
 includeBuild("./Plugin")
 
-//include ':Plugin'
-//include ':Plugin:checkPlugin'
+
+include ':android-lib'

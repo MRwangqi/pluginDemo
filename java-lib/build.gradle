@@ -1,0 +1,18 @@
+plugins {
+    id 'java-library'
+    id 'kotlin'
+    id 'uploadGithub'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+}
+
+upload {
+    groupId = "com.aa.bb"
+    artifactId = "java_lib"
+    version = "1.0.0"
+//    githubURL = "git@github.com:MRwangqi/Maven.git"
+//    githubBranch = "apk"
+}
