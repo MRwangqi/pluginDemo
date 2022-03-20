@@ -1,15 +1,15 @@
 plugins {
     id 'com.android.library'
     id 'kotlin-android'
-    id 'uploadGithub'
+    id 'uploadMaven'
 }
 
 upload {
     groupId = "com.codelang.library"
     artifactId = "android_lib"
-    version = "1.0.3"
+    version = "1.0.4"
 
-//    nexusURL = "http://localhost:8081/repository/android/"
+    nexusURL = "http://localhost:8081/repository/android/"
 //    nexusName = "admin"
 //    nexusPsw = "admin"
 }

@@ -20,7 +20,7 @@ import java.io.InputStreamReader
 class UploadGithub : BaseUploadPlugin() {
 
 
-    override fun isSupportUpload(uploadConfig: UploadConfig): Boolean {
+    override fun isSupportUpload(uploadConfig: UploadConfig,project: Project): Boolean {
         return true
     }
 
