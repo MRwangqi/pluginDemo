@@ -5,11 +5,12 @@ open class UploadConfig {
     var artifactId: String = ""
     var groupId: String = ""
     var sourceJar: Boolean = true
+    var hasPomDepend: Boolean = true
+
 
     // github 相关
     var githubURL: String = ""
     var githubBranch: String = ""
-    var hasPomDepend: Boolean = true
 
     // nexus 相关
     var nexusURL: String = ""
