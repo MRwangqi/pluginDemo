@@ -38,18 +38,18 @@ upload {
     artifactId = ""
     // 必选
     version = ""
-    // 模块下的依赖是否打入 pom : (可选，默认会打入)
-    hasPomDepend = true
-    // 模块是否打入 source 源码: (可选，默认会打入)
-    sourceJar = true
-
-    // github 仓库链接:(可选，如果不配置的话则发布到 project 下的 build/repo 目录)
-    githubURL = ""
-    // github 仓库分支:(可选，如果不配置的话则以仓库当前配置的分支为准)
-    githubBranch = ""
 }
 ```
 
+插件在运行时会读取 local.properties 中 github 的内容
+
+> local.properties 配置
+```
+# github 仓库链接(可选，如果不配置的话则发布到 project 下的 build/repo 目录)
+githubURL = ""
+# github 仓库分支(可选，如果不配置的话则以仓库当前配置的分支为准)
+githubBranch = ""
+```
 
 
 ### 2、上传到 maven
@@ -70,21 +70,36 @@ upload {
    artifactId = ""
     // 必选
    version = ""
-   // 模块下的依赖是否打入 pom : (可选，默认会打入)
-   hasPomDepend = true
-   // 模块是否打入 source 源码: (可选，默认会打入)
-   sourceJar = true
+}
+```
 
+插件在运行时会读取 local.properties 中 nexus 的内容
+
+> local.properties 配置
+
+```
    // nexus 地址 (可选，如果不配置的话则发布到 project 下的 build/repo 目录)
    nexusURL = ""
    nexusName = ""
    nexusPsw = ""
-}
 ```
 
-将 nexus 的 name 和 psw 配置到 build.gradle 会有一定的风险，所以，uploadMaven 也支持通过命令参数来输入：
+
+uploadMaven 也支持通过命令参数来输入：
 >  ./gradlew :android-lib:upload -Pname=${nexusName} -Ppsw=${nexusPsw} -Purl=${nexusURL}
 
 例如要打包 android-lib 模块，用户名和密码都是 admin，则命令行为:
 > ./gradlew :android-lib:upload -Pname=admin -Ppsw=admin -Purl=http://localhost:8081/repository/android/
+
+
+
+通用配置：
+```
+upload {
+    // 模块下的依赖是否打入 pom : (可选，默认会打入)
+    hasPomDepend = true
+    // 模块是否打入 source 源码: (可选，默认会打入)
+    sourceJar = true
+}
+```
 
