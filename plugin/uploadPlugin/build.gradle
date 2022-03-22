@@ -3,6 +3,8 @@ apply plugin: 'kotlin'
 apply plugin: 'java-gradle-plugin'
 apply plugin: 'maven-publish'
 
+version = "2.0.0"
+group = "com.github.MRwangqi"
 
 
 dependencies {

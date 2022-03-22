@@ -23,11 +23,11 @@ class UploadGithub : BaseUploadPlugin() {
     override fun isSupportUpload(uploadConfig: UploadConfig, project: Project): Boolean {
         val properties = Properties()
         properties.load(project.rootProject.file("local.properties").inputStream())
-        val githubURL = properties.getProperty("githubURL")
+        val githubURL = properties.getProperty("githubURL")?:""
         if (githubURL.isNotEmpty()) {
             uploadConfig.githubURL = githubURL
         }
-        val githubBranch = properties.getProperty("githubBranch")
+        val githubBranch = properties.getProperty("githubBranch")?:""
         if (githubURL.isNotEmpty()) {
             uploadConfig.githubBranch = githubBranch
         }

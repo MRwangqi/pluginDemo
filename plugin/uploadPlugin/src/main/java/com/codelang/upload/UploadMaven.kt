@@ -16,16 +16,16 @@ class UploadMaven : BaseUploadPlugin() {
         val properties =  Properties()
         properties.load(project.rootProject.file("local.properties").inputStream())
 
-        val nexusUrl = properties.getProperty("nexusURL")
+        val nexusUrl = properties.getProperty("nexusURL")?:""
         if (nexusUrl.isNotEmpty()){
             uploadConfig.nexusURL = nexusUrl
         }
-        val nexusName = properties.getProperty("nexusName")
+        val nexusName = properties.getProperty("nexusName")?:""
         if (nexusUrl.isNotEmpty()){
             uploadConfig.nexusName = nexusName
         }
 
-        val nexusPsw = properties.getProperty("nexusPsw")
+        val nexusPsw = properties.getProperty("nexusPsw")?:""
         if (nexusUrl.isNotEmpty()){
             uploadConfig.nexusPsw = nexusPsw
         }

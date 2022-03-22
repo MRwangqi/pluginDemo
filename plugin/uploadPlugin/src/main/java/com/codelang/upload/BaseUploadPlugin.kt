@@ -169,6 +169,23 @@ abstract class BaseUploadPlugin : Plugin<Project> {
                         dependencyNode?.appendNode("artifactId", dependency.name)
                         dependencyNode?.appendNode("version", dependency.version)
                         dependencyNode?.appendNode("scope", scopeMapping[key])
+
+
+// https://github.com/CKS-ROC/Useful_Gradle/blob/master/install.gradle
+//                        if (!dependency.transitive) {
+//                            // If this dependency is transitive, we should force exclude all its dependencies them from the POM
+//                            final exclusionNode = dependencyNode.appendNode('exclusions').appendNode('exclusion')
+//                            exclusionNode.appendNode('artifactId', '*')
+//                            exclusionNode.appendNode('groupId', '*')
+//                        } else if (!dep.properties.excludeRules.empty) {
+//                            // Otherwise add specified exclude rules
+//                            final exclusionsNode = dependencyNode.appendNode('exclusions')
+//                            dep.properties.excludeRules.each { ExcludeRule rule ->
+//                                final exclusionNode = exclusionsNode.appendNode('exclusion')
+//                                exclusionNode.appendNode('artifactId', rule.module ?: '*')
+//                                exclusionNode.appendNode('groupId', rule.group ?: '*')
+//                            }
+//                        }
                     }
                 }
             }
