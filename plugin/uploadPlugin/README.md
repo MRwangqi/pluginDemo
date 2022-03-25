@@ -46,9 +46,10 @@ upload {
 > local.properties 配置
 ```
 # github 仓库链接(可选，如果不配置的话则发布到 project 下的 build/repo 目录)
-githubURL = ""
+# XXX 为填充区域
+githubURL = XXX
 # github 仓库分支(可选，如果不配置的话则以仓库当前配置的分支为准)
-githubBranch = ""
+githubBranch = XXX
 ```
 
 
@@ -78,10 +79,11 @@ upload {
 > local.properties 配置
 
 ```
-   // nexus 地址 (可选，如果不配置的话则发布到 project 下的 build/repo 目录)
-   nexusURL = ""
-   nexusName = ""
-   nexusPsw = ""
+   # nexus 地址 (可选，如果不配置的话则发布到 project 下的 build/repo 目录)
+   # XXX 为填充区域
+   nexusURL = XXX
+   nexusName = XXX
+   nexusPsw =  XXX
 ```
 
 
