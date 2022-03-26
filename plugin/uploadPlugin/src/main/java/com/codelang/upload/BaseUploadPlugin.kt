@@ -106,6 +106,7 @@ abstract class BaseUploadPlugin : Plugin<Project> {
             }
 
             project.task("upload") {
+                it.group = "upload"
                 it.dependsOn("publishMavenPublicationToMavenRepository")
             }
 
