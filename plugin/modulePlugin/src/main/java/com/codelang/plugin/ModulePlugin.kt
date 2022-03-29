@@ -1,12 +1,27 @@
 package com.codelang.plugin
 
 import com.android.build.gradle.AppExtension
+import com.codelang.plugin.utils.Utils
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import java.io.File
 
 class ModulePlugin : Plugin<Project> {
+
+
     override fun apply(project: Project) {
+        if (!project.plugins.hasPlugin("com.android.application")) {
+            println("------- 必须在主模块下引用 ------------")
+            return
+        }
+
+        val skipModules = Utils.getSkips(project)
+
+        if (!Utils.isEnable(project)) {
+            println("------- 已关闭 gav to project 功能------------")
+            return
+        }
+
         project.afterEvaluate {
             val gavMap = hashMapOf<String, Project>()
             project.rootProject.allprojects {
@@ -46,18 +61,23 @@ class ModulePlugin : Plugin<Project> {
                     .forEach { configuration ->
                         configuration.dependencies.filterNotNull().forEach {
                             val p = gavMap[it.group + it.name]
-                            if (p != null && !it.group.isNullOrEmpty() && !it.name.isNullOrEmpty()) {
-                                // 从主工程中排除 aar 依赖
-                                val excludeMap = hashMapOf<String, String>().apply {
-                                    put("group", it.group!!)
-                                    put("module", it.name)
-                                }
-                                configuration.exclude(excludeMap)
-                                println("排除依赖:${configuration.name} ${it.group}:${it.name}:${it.version}")
-                                // 主工程添加 module 模块依赖
-                                project.dependencies.add(configuration.name, p)
+                            if (skipModules.contains(it.name)) {
+                                // 跳过 GAV 的转换
+                                println("------- 跳过模块:${it.name}----依赖为:${it.group}:${it.name}--------")
+                            } else {
+                                if (p != null && !it.group.isNullOrEmpty() && !it.name.isNullOrEmpty()) {
+                                    // 从主工程中排除 aar 依赖
+                                    val excludeMap = hashMapOf<String, String>().apply {
+                                        put("group", it.group!!)
+                                        put("module", it.name)
+                                    }
+                                    configuration.exclude(excludeMap)
+                                    println("排除依赖:${configuration.name} ${it.group}:${it.name}:${it.version}")
+                                    // 主工程添加 module 模块依赖
+                                    project.dependencies.add(configuration.name, p)
 
-                                println("替换本地模块:${configuration.name} project(:${p.name})")
+                                    println("替换本地模块:${configuration.name} project(:${p.name})")
+                                }
                             }
                         }
                     }
