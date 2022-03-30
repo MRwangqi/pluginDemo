@@ -37,19 +37,6 @@ android {
     }
 }
 
-android {
-    flavorDimensions "platform"
-
-    productFlavors {
-        xiaomi {
-            dimension "platform"
-        }
-        oppo {
-            dimension "oppo"
-        }
-    }
-}
-
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar","*.aar"])
 
