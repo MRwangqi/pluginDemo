@@ -1,11 +1,14 @@
+import org.gradle.work.Incremental
+import org.gradle.work.InputChanges
+
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
     id 'checkPlugin'
 }
 
-check{
-    manifestWhiteFile="ManifestWhite.xml"
+check {
+    manifestWhiteFile = "ManifestWhite.xml"
 }
 
 android {
@@ -37,7 +40,7 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: "libs", include: ["*.jar","*.aar"])
+    implementation fileTree(dir: "libs", include: ["*.jar", "*.aar"])
 
     implementation 'androidx.core:core-ktx:1.6.0'
     implementation 'androidx.appcompat:appcompat:1.3.1'
@@ -53,4 +56,46 @@ dependencies {
 
     implementation 'com.github.MRwangqi.MessageHook:hook:1.0.11'
 
+}
+
+abstract class IncrementTask extends DefaultTask {
+    @Incremental
+    @PathSensitive(PathSensitivity.NAME_ONLY)
+    @InputDirectory
+    abstract DirectoryProperty getInputDir()
+
+    @OutputDirectory
+    abstract DirectoryProperty getOutputDir()
+
+    @Input
+    abstract Property<String> getInputProperty()
+
+    @TaskAction
+    void execute(InputChanges inputChanges) {
+        println(inputChanges.incremental
+                ? 'Executing incrementally'
+                : 'Executing non-incrementally'
+        )
+
+        inputChanges.getFileChanges(inputDir).each { change ->
+            if (change.fileType == FileType.DIRECTORY) return
+            def targetFile = outputDir.file(change.normalizedPath).get().asFile
+            println "${change.changeType}: ${change.normalizedPath}"
+            if (change.changeType == ChangeType.REMOVED) {
+                targetFile.delete()
+            } else {
+                def tx = change.file.text.reverse()
+                targetFile.text = tx
+                println(tx)
+            }
+        }
+    }
+}
+
+
+tasks.register('incrementalReverse', IncrementTask) {
+    it.group("haha")
+    inputDir = file("$buildDir/inputs")
+    outputDir = file("$buildDir/outputs")
+    inputProperty = project.properties['taskInputProperty'] ?: 'original'
 }
