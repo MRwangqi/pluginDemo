@@ -18,9 +18,15 @@ class CheckFileTask(private val project: Project) {
     fun runTask(taskName: String, configurationName: String, checkFiles: ArrayList<BaseFileCheck>) {
         project.tasks.create(taskName) {
             it.doLast {
+                //
+                project.configurations.getByName(configurationName).resolvedConfiguration.resolvedArtifacts.forEach {
+                    // 版本
+                    println(it.moduleVersion.toString()+" --> "+it.file)
+                }
+
+
                 val list = project.configurations.getByName(configurationName).asPath.split(File.pathSeparator)
                         .toList()
-
 
                 IndexHtml.cleanSection()
 

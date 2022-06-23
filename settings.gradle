@@ -8,6 +8,9 @@ dependencyResolutionManagement {
             allowInsecureProtocol = true
             url "http://localhost:8081/repository/android/"
         }
+        maven{
+            url "https://raw.githubusercontent.com/MRwangqi/Maven/main"
+        }
     }
 }
 rootProject.name = "pluginDemo"
@@ -18,3 +21,4 @@ includeBuild("./Plugin")
 
 
 include ':android-lib'
+

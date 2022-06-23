@@ -8,3 +8,4 @@ dependencyResolutionManagement {
 rootProject.name = "plugin"
 include ':checkPlugin'
 include ':uploadPlugin'
+include ':modulePlugin'
