@@ -21,11 +21,15 @@ class ResourcePlugin : Plugin<Project> {
                 // 获取所有参与合并的 res 资源
                 val files = variant.allRawAndroidResources.files
                 checkResLayout(files)
+                checkResDrawable(files)
             }
             mergeResourcesTask.dependsOn(resourceTask)
         }
     }
 
+    /**
+     * 检查 Layout 资源是否冲突
+     */
     private fun checkResLayout(files: Set<File>) {
         val hashMap = HashMap<String, String>()
         val dumplicateLayout = HashMap<String, Pair<String, String>>()
@@ -47,6 +51,40 @@ class ResourcePlugin : Plugin<Project> {
         if (dumplicateLayout.isNotEmpty()) {
             println("-------- layout 资源重复----------")
             dumplicateLayout.forEach {
+                println(it.key + " ---- " + it.value)
+            }
+        }
+    }
+
+    /**
+     * 检查 Drawable 资源是否冲突
+     */
+    private fun checkResDrawable(files: Set<File>) {
+        val hashMap = HashMap<String, String>()
+        val dumplicateDrawable = HashMap<String, Pair<String, String>>()
+        files.forEach { file ->
+            val drawableDir = file.listFiles()?.filter { it.isDirectory && it.name.contains("drawable") }
+
+            // drawable 有多个目录，同一个模块下如果出现多个资源名相同的话，只需记录一个即可
+            val moduleMap = HashMap<String, String>()
+            drawableDir?.map { drawable ->
+                drawable.listFiles()?.forEach { file ->
+                    if (hashMap.containsKey(file.name)) {
+                        // 资源重复
+                        dumplicateDrawable[file.name] = Pair(file.absolutePath, hashMap[file.name]
+                                ?: "")
+                    } else {
+                        moduleMap[file.name] = file.absolutePath
+                    }
+                }
+            }
+
+            hashMap.putAll(moduleMap)
+        }
+
+        if (dumplicateDrawable.isNotEmpty()) {
+            println("-------- Drawable 资源重复----------")
+            dumplicateDrawable.forEach {
                 println(it.key + " ---- " + it.value)
             }
         }
