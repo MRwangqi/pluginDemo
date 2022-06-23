@@ -9,11 +9,6 @@ dependencies {
     api "com.android.tools.build:gradle-api:$apgVersion"
     api "com.android.tools.build:gradle:$apgVersion"
     implementation "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
-
-    compileOnly "commons-io:commons-io:2.6"
-    compileOnly "commons-codec:commons-codec:1.15"
-    compileOnly "org.ow2.asm:asm-commons:9.2"
-    compileOnly "org.ow2.asm:asm-tree:9.2"
 }
 
 version = "1.0.0"
@@ -22,8 +17,8 @@ group = "com.github.MRwangqi"
 gradlePlugin {
     plugins {
         version {
-            id = 'TracePlugin'
-            implementationClass = 'com.codelang.plugin.TracePlugin'
+            id = 'resourcePlugin'
+            implementationClass = 'com.codelang.plugin.ResourcePlugin'
         }
     }
 }
@@ -35,7 +30,7 @@ afterEvaluate {
             maven(MavenPublication) {
                 from components.java
                 groupId = "com.github.MRwangqi"
-                artifactId = "TracePlugin"
+                artifactId = "resourcePlugin"
                 version = "1.0.0"
             }
         }

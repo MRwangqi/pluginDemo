@@ -1,5 +1,4 @@
 dependencyResolutionManagement {
-//    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
         google()
         mavenCentral()
@@ -9,4 +8,4 @@ rootProject.name = "plugin"
 include ':checkPlugin'
 include ':uploadPlugin'
 include ':modulePlugin'
-include ':TracePlugin'
+include ':resourcePlugin'

@@ -3,6 +3,7 @@ plugins {
     id 'kotlin-android'
     id 'checkPlugin'
     id 'modulePlugin'
+    id 'resourcePlugin'
 }
 
 check{
@@ -49,14 +50,14 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 
     //3D地图so及jar
-    implementation 'com.amap.api:3dmap:latest.integration'
-    implementation 'com.amap.api:location:latest.integration'
+//    implementation 'com.amap.api:3dmap:latest.integration'
+//    implementation 'com.amap.api:location:latest.integration'
 
 //    implementation 'com.github.MRwangqi.MessageHook:hook:1.0.11'
 
 
     //todo 模拟被替换成本地的 aar
-//    implementation ("com.codelang.library:android-lib:1.0.0")
-
+    implementation project(":android-lib")
+    implementation project(":android-lib2")
 
 }
