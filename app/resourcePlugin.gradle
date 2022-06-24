@@ -22,7 +22,7 @@ def checkResLayout(Project project, Set<File> files) {
         if (layoutDir != null) {
             layoutDir.listFiles().each { layout ->
                 if (hashMap.containsKey(layout.name)) {
-                    var list = duplicateLayout[layout.name]
+                    def list = duplicateLayout[layout.name]
                     if (list == null) {
                         list = new ArrayList<String>()
                         list.add(hashMap[layout.name])
