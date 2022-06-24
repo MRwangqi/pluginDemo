@@ -25,6 +25,7 @@ plugins {
     id "uploadMaven" apply false
     id "uploadGithub" apply false
     id "modulePlugin" apply false
+    id "resourcePlugin" apply false
 }
 
 task clean(type: Delete) {

@@ -19,6 +19,7 @@ include ':java-lib'
 
 includeBuild("./Plugin")
 
-
+include ':android-lib2'
 include ':android-lib'
+
 

@@ -12,7 +12,7 @@
 
     <TextView
         android:drawableLeft="@drawable/ic_menu_camera"
-        android:text="lib hello word"
+        android:text="main hello word"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 </LinearLayout>
