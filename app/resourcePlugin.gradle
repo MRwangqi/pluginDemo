@@ -1,0 +1,58 @@
+project.extensions.getByName("android").applicationVariants.all { variant ->
+    def mergeResourcesTask = variant.mergeResourcesProvider.get()
+    def mergeAssetsTask = variant.mergeAssetsProvider.get()
+
+    def resourceTask = project.task("DuplicateResource${variant.name.capitalize()}Check")
+    resourceTask.doLast {
+        def files = variant.allRawAndroidResources.files
+        checkResLayout(project, files)
+        checkResDrawable(files)
+        checkAssets(mergeAssetsTask.getLibraries().files, mergeAssetsTask.sourceFolderInputs.files)
+    }
+    mergeResourcesTask.dependsOn(resourceTask)
+}
+
+
+def checkResLayout(Project project, Set<File> files) {
+    def hashMap = new HashMap<String, String>()
+    def duplicateLayout = new HashMap<String, ArrayList<String>>()
+    // todo 处理 layout
+    files.each { file ->
+        def layoutDir = file.listFiles().find { it.isDirectory() && it.name == "layout" }
+        if (layoutDir != null) {
+            layoutDir.listFiles().each { layout ->
+                if (hashMap.containsKey(layout.name)) {
+                    var list = duplicateLayout[layout.name]
+                    if (list == null) {
+                        list = new ArrayList<String>()
+                        list.add(hashMap[layout.name])
+                    }
+                    list.add(layout.absolutePath)
+                    // 资源重复
+                    duplicateLayout[layout.name] = list
+                } else {
+                    hashMap[layout.name] = layout.absolutePath
+                }
+            }
+        }
+    }
+
+    if (!duplicateLayout.isEmpty()) {
+        println()
+        project.logger.error("-------- layout 资源重复----------")
+        duplicateLayout.each { entry ->
+            println(entry.key)
+            entry.value.each {
+                project.logger.error("----> " + it)
+            }
+        }
+    }
+}
+
+def checkResDrawable(Set<File> files) {
+    // todo 处理 Drawable
+}
+
+def checkAssets(Set<File> libraryFolder, Set<File> sourceFolder) {
+    // todo 处理 assets
+}
