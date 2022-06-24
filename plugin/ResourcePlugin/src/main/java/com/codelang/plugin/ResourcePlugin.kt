@@ -4,12 +4,17 @@ import com.android.build.gradle.AppExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import java.io.File
+import org.gradle.api.logging.Logger
 
-// https://nunu03.github.io/2021/09/06/Gradle%E4%B9%8Bandroid.precompileDependenciesResources%E9%85%8D%E7%BD%AE%E4%BB%8B%E7%BB%8D/
+
 class ResourcePlugin : Plugin<Project> {
+
+    var logger: Logger? = null
     override fun apply(project: Project) {
         println("ResourcePlugin---------->")
         val appExtension = project.extensions.getByType(AppExtension::class.java)
+
+        logger = project.logger
 
         appExtension.applicationVariants.all { variant ->
             val mergeResourcesTask = variant.mergeResourcesProvider.get()
@@ -54,11 +59,12 @@ class ResourcePlugin : Plugin<Project> {
         }
 
         if (duplicateLayout.isNotEmpty()) {
-            println("-------- layout 资源重复----------")
+            println()
+            logger?.error("-------- layout 资源重复----------")
             duplicateLayout.forEach {
                 println(it.key)
                 it.value.forEach {
-                    println("----> $it")
+                    logger?.error("----> $it")
                 }
             }
         }
@@ -76,7 +82,7 @@ class ResourcePlugin : Plugin<Project> {
             val moduleMap = HashMap<String, ArrayList<String>>()
             drawableDir?.map { drawable ->
                 drawable.listFiles()?.forEach { file ->
-                    // Drawable 是否重复只判断文件名，不判断扩展名，为因为 XX.png,xx.jpeg,xx.webp 都是指一个图片
+                    // Drawable 是否重复只判断文件名，不判断扩展名，因为 XX.png,xx.jpeg,xx.webp 都是指一个图片
                     if (hashMap.containsKey(file.nameWithoutExtension)) {
                         // 资源重复
                         var list = duplicateDrawable[file.nameWithoutExtension]
@@ -98,11 +104,12 @@ class ResourcePlugin : Plugin<Project> {
         }
 
         if (duplicateDrawable.isNotEmpty()) {
-            println("-------- Drawable 资源重复----------")
+            println()
+            logger?.error("-------- Drawable 资源重复----------")
             duplicateDrawable.forEach {
                 println(it.key)
                 it.value.forEach {
-                    println("----> $it")
+                    logger?.error("----> $it")
                 }
             }
         }
@@ -114,42 +121,52 @@ class ResourcePlugin : Plugin<Project> {
         files.addAll(libraryAssets?.toList() ?: arrayListOf())
         files.addAll(sourceFolderAssets.toList())
 
-        // todo 得递归遍历 assets 下的路径，以相对路径为 key，然后遍历重复 file ，待做
-
-
-        val hashMap = HashMap<String, String>()
         val duplicateAssets = HashMap<String, ArrayList<String>>()
-        files.forEach { file ->
-//            val assetsDir = file.listFiles()?.firstOrNull { it.isDirectory }
-//            if (assetsDir != null) {
-            file.listFiles()?.forEach { layout ->
-                println("----->"+layout.absolutePath)
-                    if (hashMap.containsKey(layout.name)) {
-                        var list = duplicateAssets[layout.name]
-                        if (list == null) {
-                            list = arrayListOf()
-                            list.add(hashMap[layout.name] ?: "")
-                        }
-                        list.add(layout.absolutePath)
-                        // 资源重复
-                        duplicateAssets[layout.name] = list
-                    } else {
-                        hashMap[layout.name] = layout.absolutePath
+        val hashMap = HashMap<String, String>()
+
+        //  递归遍历 assets 下的文件，以相对路径为 key，然后遍历重复 file
+        files.forEach { assets ->
+            val list = arrayListOf<File>().apply {
+                getFiles(assets, this)
+            }
+
+            list.forEach {
+                val relativePath = it.absolutePath.replace(assets.absolutePath, "")
+                if (hashMap.containsKey(relativePath) && relativePath.isNotEmpty()) {
+                    // assets 资源重复
+                    var l = duplicateAssets[relativePath]
+                    if (l == null) {
+                        l = arrayListOf()
+                        l.add(hashMap[relativePath] ?: "")
                     }
+                    l.add(it.absolutePath)
+                    duplicateAssets[relativePath] = l
+                } else {
+                    hashMap[relativePath] = it.absolutePath
                 }
-//            }
+            }
         }
 
         if (duplicateAssets.isNotEmpty()) {
-            println("-------- assets 资源重复----------")
+            println()
+            logger?.error("-------- assets 资源重复----------")
             duplicateAssets.forEach {
                 println(it.key)
                 it.value.forEach {
-                    println("----> $it")
+                    logger?.error("----> $it")
                 }
             }
         }
     }
 
+    private fun getFiles(file: File, list: ArrayList<File>) {
+        if (file.isDirectory) {
+            file.listFiles()?.forEach {
+                getFiles(it, list)
+            }
+        } else {
+            list.add(file)
+        }
+    }
 
 }
