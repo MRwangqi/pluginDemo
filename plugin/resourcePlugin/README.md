@@ -30,6 +30,20 @@ plugins {
     id 'resourcePlugin'
 }
 ```
+
+
+
+也有一些小伙伴的项目没有适配 AGP 7.X，所以，这里用 gradle file 写了一遍，但只实现了 layout 的重复检查，其他两个就交由大家自己实现了，照葫芦画瓢，我觉得应该不难。
+
+在 app 工程的 build.gradle 中引入 [resourcePlugin.gradle](../../app/resourcePlugin.gradle) 文件
+```aidl
+plugins {
+    id 'com.android.application'
+}
+apply from :"resourcePlugin.gradle"
+```
+
+
 示例 demo 运行效果：
 ![result](result.png)
 
