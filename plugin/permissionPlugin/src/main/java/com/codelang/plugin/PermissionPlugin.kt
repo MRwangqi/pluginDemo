@@ -8,7 +8,10 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import java.io.File
 
-
+/**
+ * 官方清单文件合并规则：
+ * https://developer.android.com/studio/build/manifest-merge?hl=zh-cn
+ */
 class PermissionPlugin : Plugin<Project> {
 
     override fun apply(project: Project) {
