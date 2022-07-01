@@ -9,7 +9,7 @@ plugins {
     id 'resourcePlugin'
 }
 
-//apply from :"resourcePlugin.gradle"
+//apply from :"../plugin/resourcePlugin/resourcePlugin.gradle"
 
 check {
     manifestWhiteFile = "ManifestWhite.xml"
