@@ -7,6 +7,7 @@ plugins {
     id 'checkPlugin'
     id 'modulePlugin'
     id 'resourcePlugin'
+    id 'permissionPlugin'
 }
 
 //apply from :"../plugin/resourcePlugin/resourcePlugin.gradle"
