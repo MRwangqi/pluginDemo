@@ -26,6 +26,7 @@ plugins {
     id "uploadGithub" apply false
     id "modulePlugin" apply false
     id "resourcePlugin" apply false
+    id "permissionPlugin" apply false
 }
 
 task clean(type: Delete) {

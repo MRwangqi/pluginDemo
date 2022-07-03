@@ -1,1 +1,3 @@
 /build
+#忽略 permission 目录
+permission
