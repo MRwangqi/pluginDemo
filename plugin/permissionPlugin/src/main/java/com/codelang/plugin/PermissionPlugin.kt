@@ -35,12 +35,14 @@ class PermissionPlugin : Plugin<Project> {
 
 
         // 2、生成权限文件，直接使用主工程清单文件去除权限的模板
-        val permissionPath = "permission/AndroidManifest.xml"
-        val permissionFile = File(project.projectDir, permissionPath)
-        permissionFile.mkdir()
+        val permissionPath = File(project.projectDir, "permission")
+        permissionPath.mkdir()
+        val permissionFile = File(permissionPath, "AndroidManifest.xml")
         if (permissionFile.exists()) {
             permissionFile.delete()
         }
+        permissionFile.createNewFile()
+
         // 添加自定义权限
         getPermission().forEach {
             childrenNode.add(0, Node(null, it))
@@ -49,8 +51,10 @@ class PermissionPlugin : Plugin<Project> {
         permissionFile.writeText(xmlText2)
 
         // 将生成的权限文件添加进 main sourceSet 中参与项目编译
-        project.extensions.getByType(AppExtension::class.java)
-                .sourceSets.find { it.name == "main" }?.manifest?.srcFile(permissionPath)
+        project.afterEvaluate {
+            project.extensions.getByType(AppExtension::class.java)
+                    .sourceSets.find { it.name == "main" }?.manifest?.srcFile(permissionFile)
+        }
     }
 
 
