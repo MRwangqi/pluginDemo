@@ -9,6 +9,7 @@ dependencies {
     api "com.android.tools.build:gradle-api:$apgVersion"
     api "com.android.tools.build:gradle:$apgVersion"
     implementation "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
+    implementation 'com.google.code.gson:gson:2.10'
 }
 
 gradlePlugin {

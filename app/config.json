@@ -1,0 +1,24 @@
+{
+  "permission": [
+    "android.permission.READ_EXTERNAL_STORAGE"
+  ],
+  "fieldRef": [
+    {
+      "className": "android/app/ActivityThread",
+      "fieldName": "mCurDefaultDisplayDpi",
+      "signature": "I"
+    }
+  ],
+  "methodRef": [
+    {
+      "className": "android/app/NotificationManager",
+      "method": "createNotificationChannel",
+      "signature": "(Landroid/app/NotificationChannel;)V"
+    },
+    {
+      "className": "androidx/core/app/ActivityCompat",
+      "method": "requestPermissions",
+      "signature": "(Landroid/app/Activity;[Ljava/lang/String;I)V"
+    }
+  ]
+}

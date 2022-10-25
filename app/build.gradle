@@ -17,6 +17,10 @@ check {
     manifestWhiteFile = "ManifestWhite.xml"
 }
 
+classParse {
+    configFilePath = project.projectDir.absolutePath + File.separator + "config.json"
+}
+
 android {
     compileSdk 31
 
