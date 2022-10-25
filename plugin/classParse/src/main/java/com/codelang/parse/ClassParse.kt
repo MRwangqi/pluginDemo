@@ -1,6 +1,7 @@
 package com.codelang.parse
 
 import classfile.ClassFile
+import classfile.ConstantPool
 import com.android.build.gradle.internal.publishing.AndroidArtifacts
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -42,7 +43,10 @@ class ClassParse : Plugin<Project> {
                     view.artifacts.forEach { result ->
                         val dep = result.variant.displayName
                         val file = result.file
-                        unzipJar(dep, file)
+                        //todo test
+                        if (dep.contains(":android-lib2:")) {
+                            unzipJar(dep, file)
+                        }
                     }
                 }
             }
@@ -79,11 +83,28 @@ class ClassParse : Plugin<Project> {
     }
 
 
-    private fun parseClass(dep: String, classFile: ClassFile) {
-        println(classFile.name)
+    private fun parseClass(dep: String, cf: ClassFile) {
+        println("className=" + cf.name)
 
-        classFile.methods.forEach {
+        cf.constant_pool.entries().forEach {
+            if (it is ConstantPool.CONSTANT_Methodref_info) {
+                cf.methods.forEach {
+                    val name = it.getName(cf.constant_pool)
+                    println("methods name=" + name)
 
+                    val type = it.descriptor.getValue(cf.constant_pool)
+                    println("methods type=" + type)
+                }
+            }else if (it is  ConstantPool.CONSTANT_Fieldref_info){
+
+                cf.fields.forEach {
+                    val name = it.getName(cf.constant_pool)
+                    println("fields name=" + name)
+
+                    val type = it.descriptor.getValue(cf.constant_pool)
+                    println("fields type=" + type)
+                }
+            }
         }
     }
 }
