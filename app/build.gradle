@@ -8,6 +8,7 @@ plugins {
     id 'modulePlugin'
     id 'resourcePlugin'
     id 'permissionPlugin'
+    id 'classParsePlugin'
 }
 
 //apply from :"../plugin/resourcePlugin/resourcePlugin.gradle"
