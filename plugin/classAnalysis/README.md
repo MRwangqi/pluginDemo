@@ -70,7 +70,7 @@ fieldName、method、signature 可以为空，可理解理解为这几个字段�
 ### 三、执行检查命令：
 
 执行命令模板如下：
-> ./gradlew classParse -Pbuild=${build variant}
+> ./gradlew classAnalysis -Pbuild=${build variant}
 
 要执行的 build variant 可以在 Android studio 中查看：
 ![image.png](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/5a6f62c79ade4ae7864c572e852ee9b8~tplv-k3u1fbpfcp-zoom-1.image)
