@@ -1,0 +1,24 @@
+{
+  "stringRef": [
+    "android.permission.READ_EXTERNAL_STORAGE",
+    "android.permission.BODY_SENSORS"
+  ],
+  "fieldRef": [
+    {
+      "className": "android/app/ActivityThread",
+      "fieldName": "mCurDefaultDisplayDpi",
+      "signature": "I"
+    }
+  ],
+  "methodRef": [
+    {
+      "className": "android/app/NotificationManager",
+      "method": "createNotificationChannel",
+      "signature": "(Landroid/app/NotificationChannel;)V"
+    },
+    {
+      "className": "android/content/Context",
+      "method": "registerReceiver"
+    }
+  ]
+}

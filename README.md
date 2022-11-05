@@ -4,3 +4,4 @@
 - [modulePlugin 的使用](./plugin/modulePlugin)
 - [resourcePlugin 的使用](./plugin/resourcePlugin)
 - [permissionPlugin 的使用](./plugin/permissionPlugin)
+- [classAnalysisPlugin 的使用](./plugin/classAnalysis)

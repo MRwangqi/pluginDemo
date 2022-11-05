@@ -8,12 +8,17 @@ plugins {
     id 'modulePlugin'
     id 'resourcePlugin'
     id 'permissionPlugin'
+    id 'classAnalysisPlugin'
 }
 
 //apply from :"../plugin/resourcePlugin/resourcePlugin.gradle"
 
 check {
     manifestWhiteFile = "ManifestWhite.xml"
+}
+
+classAnalysis {
+    configFile = project.projectDir.absolutePath + File.separator + "android13.json"
 }
 
 android {
