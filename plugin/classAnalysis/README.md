@@ -26,10 +26,11 @@ buildscript {
 plugins {
     id 'com.android.application'
     // apply 插件
-    id classAnalysisPlugin
+    id 'classAnalysisPlugin'
 }
 
 classAnalysis {
+   // 设置待分析的配置文件 
    configFile = project.projectDir.absolutePath + File.separator + "android13.json"
 }
 ```
