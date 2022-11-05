@@ -20,7 +20,7 @@ buildscript {
 }
 ```
 
-然后在 app 工程的 build.gradle 中依赖插件，并配置描述文件，描述文件可查看 app 工程目录下的 android13.json
+然后在 app 工程的 build.gradle 中依赖插件，并配置描述文件，描述文件可参考 app 工程目录下的 android13.json
 
 ```java
 plugins {
@@ -30,7 +30,7 @@ plugins {
 }
 
 classAnalysis {
-   // 设置待分析的配置文件 
+   // 设置配置文件的绝对路径
    configFile = project.projectDir.absolutePath + File.separator + "android13.json"
 }
 ```
