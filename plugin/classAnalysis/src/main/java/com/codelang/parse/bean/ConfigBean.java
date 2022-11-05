@@ -2,11 +2,14 @@ package com.codelang.parse.bean;
 
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 public class ConfigBean {
     private List<String> stringRef;
     private List<Method> methodRef;
     private List<Feild> fieldRef;
 
+    @Nullable
     public List<String> getStringRef() {
         return stringRef;
     }
@@ -15,6 +18,7 @@ public class ConfigBean {
         this.stringRef = stringRef;
     }
 
+    @Nullable
     public List<Feild> getFieldRef() {
         return fieldRef;
     }
@@ -23,7 +27,7 @@ public class ConfigBean {
         this.fieldRef = fieldRef;
     }
 
-
+    @Nullable
     public List<Method> getMethodRef() {
         return methodRef;
     }

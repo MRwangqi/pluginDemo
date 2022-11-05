@@ -135,8 +135,10 @@ class ClassAnalysis : Plugin<Project> {
         val string = info.string
 //        println("CONSTANT_String_info =$string  string_index=${info.string_index}")
 
+        if (configBean.stringRef == null) return
+
         // 检查常量是否在申明的权限中
-        if (configBean.stringRef.contains(string)) {
+        if (configBean.stringRef!!.contains(string)) {
             // 记录权限引用
             var list = stringMap[string]
             if (list == null) {
@@ -157,7 +159,7 @@ class ClassAnalysis : Plugin<Project> {
         val clazzName = info.classInfo.name
 //        println("CONSTANT_Methodref_info name=$methodName type=$methodType className=${clazzName}")
 
-        configBean.methodRef.find {
+        configBean.methodRef?.find {
             it.className == clazzName &&
                     if (it.method.isNullOrEmpty()) {
                         true
@@ -191,7 +193,7 @@ class ClassAnalysis : Plugin<Project> {
         val clazzName = info.className
 //        println("CONSTANT_Fieldref_info name=$filedName type=$filedType class=${info.className}")
 
-        configBean.fieldRef.find {
+        configBean.fieldRef?.find {
             it.className == clazzName &&
                     if (it.fieldName.isNullOrEmpty()) {
                         true
@@ -251,5 +253,7 @@ class ClassAnalysis : Plugin<Project> {
         }
         val outputFile = File(project.buildDir.absolutePath + File.separator + "classAnalysis.json")
         outputFile.writeText(text)
+
+        println("配置文件生成!!! " + outputFile.absolutePath)
     }
 }
