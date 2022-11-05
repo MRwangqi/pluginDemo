@@ -15,8 +15,8 @@ dependencies {
 gradlePlugin {
     plugins {
         version {
-            id = 'classParsePlugin'
-            implementationClass = 'com.codelang.parse.ClassParse'
+            id = 'classAnalysisPlugin'
+            implementationClass = 'com.codelang.parse.ClassAnalysis'
         }
     }
 }

@@ -31,7 +31,6 @@ class TestCase(val context: Context) {
      */
     fun testRegisterReceiver(context: Context) {
         context.registerReceiver(null, null)
-
         context.unregisterReceiver(null)
     }
 
@@ -67,8 +66,11 @@ class TestCase(val context: Context) {
         ActivityCompat.requestPermissions(context, arrayOf(Manifest.permission.BODY_SENSORS), 0)
     }
 
+    /**
+     * 非限制 sdk 调用
+     */
     fun nonSdk() {
-        val thread= ActivityThread()
+        val thread = ActivityThread()
         thread.mCurDefaultDisplayDpi
     }
 }

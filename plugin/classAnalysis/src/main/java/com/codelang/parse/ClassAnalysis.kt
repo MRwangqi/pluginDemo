@@ -5,9 +5,8 @@ import classfile.ConstantPool
 import com.android.build.gradle.internal.publishing.AndroidArtifacts
 import com.codelang.parse.bean.ConfigBean
 import com.codelang.parse.bean.ResponseBean
-import com.codelang.parse.extension.ClassParse
+import com.codelang.parse.extension.ConfigFileExtension
 import com.google.gson.Gson
-import groovy.util.XmlParser
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import java.io.File
@@ -15,20 +14,20 @@ import java.io.IOException
 import java.io.InputStream
 import java.util.jar.JarFile
 
-class ClassParse : Plugin<Project> {
+class ClassAnalysis : Plugin<Project> {
 
     companion object {
-        const val EXT_NAME = "classParse"
+        const val EXT_NAME = "classAnalysis"
         const val BUILD = "build"
     }
 
-    private val permissionMap = hashMapOf<String, ArrayList<ResponseBean.Ref>>()
+    private val stringMap = hashMapOf<String, ArrayList<ResponseBean.Ref>>()
     private val methodMap = hashMapOf<ConfigBean.Method, ArrayList<ResponseBean.Ref>>()
     private val fieldMap = hashMapOf<ConfigBean.Feild, ArrayList<ResponseBean.Ref>>()
 
 
     override fun apply(project: Project) {
-        // ./gradlew classParse -Pbuild=fullDebug
+        // ./gradlew classAnalysis -Pbuild=debug
         val params = project.gradle.startParameter.projectProperties
 
         val build = if (params.containsKey(BUILD)) {
@@ -38,11 +37,11 @@ class ClassParse : Plugin<Project> {
             "debug"
         }
 
-        project.extensions.create(EXT_NAME, ClassParse::class.java)
+        project.extensions.create(EXT_NAME, ConfigFileExtension::class.java)
 
         project.afterEvaluate {
-            val extension = project.extensions.findByName(EXT_NAME) as ClassParse
-            val configFile = extension.configFilePath
+            val extension = project.extensions.findByName(EXT_NAME) as ConfigFileExtension
+            val configFile = extension.configFile
             if (configFile.isEmpty()) {
                 throw IllegalArgumentException("configFilePath 配置为空，请检查是否配置")
             }
@@ -60,7 +59,7 @@ class ClassParse : Plugin<Project> {
 
 
             val configurationName = build + "CompileClasspath"
-            project.tasks.create("classParse") {
+            project.tasks.create("classAnalysis") {
                 it.doLast {
                     val resolvableDeps = project.configurations.getByName(configurationName).incoming
                     val view = resolvableDeps.artifactView { conf ->
@@ -70,43 +69,16 @@ class ClassParse : Plugin<Project> {
                     }
 
                     // 获取依赖 aar transform 的 jar  路径
-                    view.artifacts.forEach { result ->
-                        val dep = result.variant.displayName
-                        val file = result.file
-                        unzipJar(dep, file, configBean)
+                    view.artifacts.forEachIndexed { index, result ->
+                        val dep = result.variant.displayName.split(" ").find { it.contains(":") }
+                                ?: result.variant.displayName
+                        println("index=$index dep=$dep")
+                        val f = result.file
+                        unzipJar(dep, f, configBean)
                     }
 
-                    // 转换
-                    val response = ResponseBean()
-                    response.permission = permissionMap.map { entry ->
-                        val p = ResponseBean.Permission()
-                        p.name = entry.key
-                        p.ref = entry.value
-                        p
-                    }.toList()
-
-                    response.fieldRef = fieldMap.map { entry ->
-                        val p = ResponseBean.Field()
-                        p.className = entry.key.className
-                        p.fieldName = entry.key.fieldName
-                        p.signature = entry.key.signature
-                        p.ref = entry.value
-                        p
-                    }.toList()
-
-                    response.methodRef = methodMap.map { entry ->
-                        val p = ResponseBean.Method()
-                        p.className = entry.key.className
-                        p.method = entry.key.method
-                        p.signature = entry.key.signature
-                        p.ref = entry.value
-                        p
-                    }.toList()
-
-                    // todo 生成文件
-                    val text = Gson().toJson(response)
-                    val outputFile = File(project.buildDir.absolutePath + File.separator + "parseResult.json")
-                    outputFile.writeText(text)
+                    // 生成文件
+                    generatorFile(project)
                 }
             }
         }
@@ -142,7 +114,7 @@ class ClassParse : Plugin<Project> {
 
 
     private fun parseClass(dep: String, cf: ClassFile, configBean: ConfigBean) {
-        println("className=" + cf.name + "------------------")
+//        println("className=" + cf.name + "------------------")
         cf.constant_pool.entries().forEach {
             when (it) {
                 is ConstantPool.CONSTANT_String_info -> {
@@ -164,9 +136,9 @@ class ClassParse : Plugin<Project> {
 //        println("CONSTANT_String_info =$string  string_index=${info.string_index}")
 
         // 检查常量是否在申明的权限中
-        if (configBean.permission.contains(string)) {
+        if (configBean.stringRef.contains(string)) {
             // 记录权限引用
-            var list = permissionMap[string]
+            var list = stringMap[string]
             if (list == null) {
                 list = ArrayList()
             }
@@ -174,7 +146,7 @@ class ClassParse : Plugin<Project> {
                 dependencies = dep
                 className = cf.name
             })
-            permissionMap[string] = list
+            stringMap[string] = list
         }
     }
 
@@ -186,7 +158,12 @@ class ClassParse : Plugin<Project> {
 //        println("CONSTANT_Methodref_info name=$methodName type=$methodType className=${clazzName}")
 
         configBean.methodRef.find {
-            it.className == clazzName && it.method == methodName &&
+            it.className == clazzName &&
+                    if (it.method.isNullOrEmpty()) {
+                        true
+                    } else {
+                        it.method == methodName
+                    } &&
                     // 如果申明的 signature 为空的话，则全匹配
                     if (it.signature.isNullOrEmpty()) {
                         true
@@ -209,14 +186,18 @@ class ClassParse : Plugin<Project> {
 
 
     private fun dealField(info: ConstantPool.CONSTANT_Fieldref_info, configBean: ConfigBean, dep: String, cf: ClassFile) {
-        val filedName = info.nameAndTypeInfo.name
+        val fieldName = info.nameAndTypeInfo.name
         val filedType = info.nameAndTypeInfo.type
         val clazzName = info.className
 //        println("CONSTANT_Fieldref_info name=$filedName type=$filedType class=${info.className}")
 
         configBean.fieldRef.find {
-            it.className == clazzName && it.fieldName == filedName &&
-                    // 如果申明的 signature 为空的话，则全匹配
+            it.className == clazzName &&
+                    if (it.fieldName.isNullOrEmpty()) {
+                        true
+                    } else {
+                        it.fieldName == fieldName
+                    } &&
                     if (it.signature.isNullOrEmpty()) {
                         true
                     } else {
@@ -233,5 +214,42 @@ class ClassParse : Plugin<Project> {
             })
             fieldMap[it] = list
         }
+    }
+
+    private fun generatorFile(project: Project) {
+        // 转换
+        val response = ResponseBean()
+        response.stringRef = stringMap.map { entry ->
+            val p = ResponseBean.Permission()
+            p.name = entry.key
+            p.ref = entry.value
+            p
+        }.toList()
+
+        response.fieldRef = fieldMap.map { entry ->
+            val p = ResponseBean.Field()
+            p.className = entry.key.className
+            p.fieldName = entry.key.fieldName
+            p.signature = entry.key.signature
+            p.ref = entry.value
+            p
+        }.toList()
+
+        response.methodRef = methodMap.map { entry ->
+            val p = ResponseBean.Method()
+            p.className = entry.key.className
+            p.method = entry.key.method
+            p.signature = entry.key.signature
+            p.ref = entry.value
+            p
+        }.toList()
+
+        // 生成文件
+        val text = Gson().toJson(response)
+        if (!project.buildDir.exists()) {
+            project.buildDir.mkdir()
+        }
+        val outputFile = File(project.buildDir.absolutePath + File.separator + "classAnalysis.json")
+        outputFile.writeText(text)
     }
 }

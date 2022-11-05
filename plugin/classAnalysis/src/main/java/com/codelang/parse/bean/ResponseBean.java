@@ -5,7 +5,7 @@ import java.util.List;
 
 public class ResponseBean {
 
-    public List<Permission> permission ;
+    public List<Permission> stringRef ;
     public List<Method> methodRef;
     public List<Field> fieldRef;
 

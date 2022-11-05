@@ -3,9 +3,17 @@ package com.codelang.parse.bean;
 import java.util.List;
 
 public class ConfigBean {
-    private List<String> permission;
+    private List<String> stringRef;
     private List<Method> methodRef;
     private List<Feild> fieldRef;
+
+    public List<String> getStringRef() {
+        return stringRef;
+    }
+
+    public void setStringRef(List<String> stringRef) {
+        this.stringRef = stringRef;
+    }
 
     public List<Feild> getFieldRef() {
         return fieldRef;
@@ -15,13 +23,6 @@ public class ConfigBean {
         this.fieldRef = fieldRef;
     }
 
-    public List<String> getPermission() {
-        return permission;
-    }
-
-    public void setPermission(List<String> permission) {
-        this.permission = permission;
-    }
 
     public List<Method> getMethodRef() {
         return methodRef;

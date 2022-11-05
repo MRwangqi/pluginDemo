@@ -27,7 +27,7 @@ plugins {
     id "modulePlugin" apply false
     id "resourcePlugin" apply false
     id "permissionPlugin" apply false
-    id "classParsePlugin" apply false
+    id "classAnalysisPlugin" apply false
     id 'org.jetbrains.kotlin.jvm' version '1.6.21' apply false
 }
 

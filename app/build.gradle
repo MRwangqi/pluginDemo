@@ -8,7 +8,7 @@ plugins {
     id 'modulePlugin'
     id 'resourcePlugin'
     id 'permissionPlugin'
-    id 'classParsePlugin'
+    id 'classAnalysisPlugin'
 }
 
 //apply from :"../plugin/resourcePlugin/resourcePlugin.gradle"
@@ -17,8 +17,8 @@ check {
     manifestWhiteFile = "ManifestWhite.xml"
 }
 
-classParse {
-    configFilePath = project.projectDir.absolutePath + File.separator + "config.json"
+classAnalysis {
+    configFile = project.projectDir.absolutePath + File.separator + "android13.json"
 }
 
 android {

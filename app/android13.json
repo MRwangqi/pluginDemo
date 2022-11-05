@@ -1,6 +1,7 @@
 {
-  "permission": [
-    "android.permission.READ_EXTERNAL_STORAGE"
+  "stringRef": [
+    "android.permission.READ_EXTERNAL_STORAGE",
+    "android.permission.BODY_SENSORS"
   ],
   "fieldRef": [
     {
@@ -16,9 +17,8 @@
       "signature": "(Landroid/app/NotificationChannel;)V"
     },
     {
-      "className": "androidx/core/app/ActivityCompat",
-      "method": "requestPermissions",
-      "signature": "(Landroid/app/Activity;[Ljava/lang/String;I)V"
+      "className": "android/content/Context",
+      "method": "registerReceiver"
     }
   ]
 }
