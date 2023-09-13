@@ -17,7 +17,7 @@ rootProject.name = "pluginDemo"
 include ':app'
 include ':java-lib'
 
-includeBuild("./Plugin")
+includeBuild("./plugin")
 
 include ':android-lib2'
 include ':android-lib'
